@@ -1,6 +1,7 @@
 #include "Delaunay/TriangleMesh.h"
 #include<algorithm>
 #include<map>
+using namespace std;
 
 TriangleMesh Delaunay(vector<Point2D>& d){
     //绘制超级三角形
@@ -76,8 +77,7 @@ TriangleMesh Delaunay(vector<Point2D>& d){
     for(int i=0;i<tri.size();i++){
         bool if_move=(tri[i].x()>=pointnum)&&(tri[i].y()>=pointnum)&&(tri[i].z()>=pointnum);
         if(if_move){
-
-            tri.erase(begin(tri)+i);`
+            tri.erase(begin(tri)+i);
             i--;
         }
     }
@@ -85,9 +85,4 @@ TriangleMesh Delaunay(vector<Point2D>& d){
     result.tri=tri;
     result.d=d;
     return result;
-}
-
-
-Circ getCirc(){
-
 }

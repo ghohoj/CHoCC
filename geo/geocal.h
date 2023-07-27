@@ -51,6 +51,15 @@ Point3DPolar getPoint3DPolar(const Point3D& p,const Point3D& center=Vector3d(0,0
     return result;
 }
 
+//3d球上的极坐标转换的逆变换
+Point3D InvgetPoint3DPolar(Point3DPolar p,const Point3D& center=Vector3d(0,0,0)){
+    Point3D result;
+    result<<center.x()+p.r*sin(p.theta)*cos(p.phi),
+    center.y()+p.r*sin(p.theta)*sin(p.phi),
+    center.z()+p.r*cos(p.theta);
+    return result;
+}
+
 //球面的点投影
 Point2D StereographicProjectionofPoint(const Sphere& s,const Point3D& p){
     Point2D result;
@@ -89,7 +98,7 @@ vector<Point3D> getPointinCircofSphere(const Sphere& s,const Circ& c){
     return result;
 }
 //三角形面积
-double getTrianglearea(Triangle2D t){
+double getTrianglearea(const Triangle2D& t){
     auto t1=t.a-t.b;
     auto t2=t.c-t.b;
     auto area=abs(t1.x()*t2.y()-t2.x()*t1.y())/2;
@@ -97,7 +106,7 @@ double getTrianglearea(Triangle2D t){
 }
 
 // 判断一个点是不是在三角形里面
-bool inTriangle(Point2D p,Triangle2D t){
+bool inTriangle(const Point2D& p,const Triangle2D& t){
     auto area=getTrianglearea(t);
     Triangle2D tmp=t;
     tmp.a=p;
@@ -116,7 +125,7 @@ bool inTriangle(Point2D p,Triangle2D t){
 
 
 //判断一点是否在外接圆内（包括在外接圆上
-bool pointInCircumcircle(Triangle2D t,Point2D p) {
+bool pointInCircumcircle(const Triangle2D& t,const Point2D& p) {
     // 计算三角形的三边长度
     double x1=t.a.x(),y1=t.a.y(),x2=t.b.x(),y2=t.b.y(),x3=t.c.x(),y3=t.c.y();
     double x=p.x(),y=p.y();
@@ -139,4 +148,28 @@ bool pointInCircumcircle(Triangle2D t,Point2D p) {
     // 判断点是否在外接圆上
     double d = std::sqrt(std::pow(x - xc, 2) + std::pow(y - yc, 2));
     return d <= r;
+}
+//判断一个点是不是在圆中
+bool inCirc(const Point2D& p,const Circ2D& c){
+    if((c.center-p).norm()<c.r){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+//计算一个点映射到一个圆上的那个点
+Point2D getPointonCirc(const Point2D& p,const Circ2D& c){
+    auto d=(p-c.center).normalized();
+    auto result=c.center+d*c.r;
+    return result;
+}
+
+
+//平行线的距离
+double LineandLine(Line2D l1,Line2D l2){
+    auto dir=l1.dirc.normalized();
+    auto result=(l1.point-l2.point).cross(dir).norm();
+    return result;
 }

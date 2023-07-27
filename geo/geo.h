@@ -71,3 +71,9 @@ struct Plane
     Vector3d dirc;
     Point3D point;
 };
+
+struct Line2D
+{
+    Vector2d dirc;
+    Point2D point;
+};
