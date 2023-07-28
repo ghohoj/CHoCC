@@ -1,7 +1,7 @@
 #pragma once
-#include "geo/geooutput.h"
+#include "../geo/geooutput.h"
 #include<vector>
-#include"cal/equal.h"
+#include"../cal/equal.h"
 
 //利用三个点生成平面
 Plane getPlanefromPoint(const Point3D& a,const Point3D& b,const Point3D& c){
@@ -17,9 +17,10 @@ vector<Point3D> getPonintfromPlanandCirc(Plane p,Circ c){
 }
 
 //判断两条线段会不会相交(这两条直线已经确认在同一个平面了)
-bool LineSegmentIntersect(const Vector3d& a1,const Vector3d& a2,const Vector3d& b1,const Vector3d& b2){
+//Todo
+// bool LineSegmentIntersect(const Vector3d& a1,const Vector3d& a2,const Vector3d& b1,const Vector3d& b2){
     
-}
+// }
 
 //确认点的顺序,使得其连接为一个凸多边形
 void pointSeq(vector<Point3D>& points1,vector<Point3D>& points2){
@@ -170,6 +171,7 @@ Point2D getPointonCirc(const Point2D& p,const Circ2D& c){
 //平行线的距离
 double LineandLine(Line2D l1,Line2D l2){
     auto dir=l1.dirc.normalized();
-    auto result=(l1.point-l2.point).cross(dir).norm();
+    auto result=(l1.point-l2.point).dot(dir);
+    result=sqrt((l1.point-l2.point).squaredNorm()-result*result);
     return result;
 }

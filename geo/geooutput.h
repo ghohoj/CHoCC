@@ -1,5 +1,5 @@
 # pragma once
-#include "geo/geo.h"
+#include "../geo/geo.h"
 #include<iostream>
 using namespace std;
 
@@ -23,5 +23,12 @@ ostream & operator<<(ostream & out,const Sphere& spec){
     out<<"类型：球"<<endl;
     out<<"半径："<<spec.r<<endl;
     out<<"圆心："<<spec.center.x()<<" "<<spec.center.y()<<" "<<spec.center.z()<<endl;
+    return out;
+}
+
+ostream & operator<<(ostream & out,const Circ2D& c){
+    out<<"类型：平面上的圆"<<endl;
+    out<<"半径："<<c.r<<endl;
+    out<<"圆心："<<c.center.x()<<" "<<c.center.y()<<endl;
     return out;
 }
