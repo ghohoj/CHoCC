@@ -1,6 +1,6 @@
+#include"generate/Apollonius.h"
+#include"Delaunay/Delauat.h"
 //测试相切圆（三个不相交）（1）
-#include"trianglesgenerate/Apollonius.h"
-
 void test1(){
     vector<Circ2D> ThreeCirc2D;
     Circ2D tmp;
@@ -14,21 +14,16 @@ void test1(){
     vector<Point2D> result=getCirc(ThreeCirc2D);
     cout<<(result[0]+result[1]+result[2])/3;
 }
-
-//测试相切圆（一个不相交两个相交）（1）
-
-
-//测试三角剖分
-
-
-
-//测试第一个方法划分的三角形效果
-
-
-
-//测试采样
-
-
+//测试反演变换
+void test2(){
+    Circ2D tmp;
+    tmp.r=0.5;
+    tmp.center<<0,1;
+    Vector2d p;
+    p<<0,0;
+    auto x=InversetoCirc2D(p,tmp);
+    cout<<x;
+}
 //测试求解getCircofLineandCirc(const Circ2D& a,const Line2D& b,const Line2D& c)
 void test3(){
     Circ2D tmp;
@@ -43,18 +38,35 @@ void test3(){
     cout<<x[0];
     cout<<x[1];
 }
-
-//测试反演变换
-void test2(){
-    Circ2D tmp;
-    tmp.r=0.5;
-    tmp.center<<0,1;
-    Vector2d p;
-    p<<0,0;
-    auto x=InversetoCirc2D(p,tmp);
+//测试第一个方法划分的三角形效果
+void test4(){
+    vector<Point2D> list_tmp;
+    Point2D tmp;
+    tmp<<0,0;
+    list_tmp.push_back(tmp);
+    tmp<<sqrt(3)/2,0;
+    list_tmp.push_back(tmp);
+    tmp<<-sqrt(3)/2,0;
+    list_tmp.push_back(tmp);
+    tmp<<0,1.0/2;
+    list_tmp.push_back(tmp);
+    tmp<<0,-1.0/2;
+    list_tmp.push_back(tmp);
+    auto x=Delaunay(list_tmp);
     cout<<x;
 }
 
+//测试
+
+//测试三角剖分
+
+
+
+//测试采样
+
+
+
+
 int main(){
-    test1();
+    test4();
 }

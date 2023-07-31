@@ -134,3 +134,6 @@ vector<Point2D> getCirc(vector<Circ2D>& ThreeCirc2D){
     result.push_back(tmpp);
     return result;
 }
+
+
+

@@ -25,6 +25,7 @@ struct Sphere
 {
     double r;
     Point3D center;
+    Sphere(double r,Point3D center):r(r),center(center){}
 };
 
 struct Cone
@@ -64,16 +65,42 @@ struct Circ
     double r;
 };
 
-
-
 struct Plane
 {
     Vector3d dirc;
     Point3D point;
+    Plane(Vector3d dirc=Vector3d(0,0,0),Point3D point=Vector3d(0,0,0)):dirc(dirc),point(point){}
 };
 
 struct Line2D
 {
     Vector2d dirc;
     Point2D point;
+};
+
+struct Circ
+{
+    Point3D center;
+    Vector3d dir;
+    double r;
+    vector<int> passpoint;//这个是用来标记需要经过的点
+};
+
+struct edgeNum:pair<int,int>
+{
+    edgeNum(int i,int j){
+        this->first=max(i,j);
+        this->second=min(i,j);
+    }
+    bool operator<(edgeNum a){
+        if(this->first<a.first){
+            return true;
+        }
+        else if(this->first==a.first&&this->second<a.second){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 };

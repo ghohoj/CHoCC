@@ -10,6 +10,19 @@ Plane getPlanefromPoint(const Point3D& a,const Point3D& b,const Point3D& c){
     result.dirc=(a-b).cross(b-c);
     return result;
 }
+Plane getPlanefromPoint(const vector<Point3D>& ps){
+    return getPlanefromPoint(ps[0],ps[1],ps[2]);
+}
+
+//这里的o点要求在向量的反面
+Plane getPlanefromPoint(const vector<Point3D>& ps,const Point3D& o){
+    Plane tmp=getPlanefromPoint(ps[0],ps[1],ps[2]);
+    if((o-tmp.point).dot(tmp.dirc)<0){
+        tmp.dirc=-tmp.dirc;
+    }
+    return tmp;
+}
+
 //平面截取圆上点，一般有两个点
 vector<Point3D> getPonintfromPlanandCirc(Plane p,Circ c){
     vector<Point3D> result;
@@ -23,9 +36,9 @@ vector<Point3D> getPonintfromPlanandCirc(Plane p,Circ c){
 // }
 
 //确认点的顺序,使得其连接为一个凸多边形
-void pointSeq(vector<Point3D>& points1,vector<Point3D>& points2){
+// void pointSeq(vector<Point3D>& points1,vector<Point3D>& points2){
 
-}
+// }
 
 //找到顶点
 Point3D findPoint(const vector<Point3D>& points1,const vector<Point3D>& points2){
@@ -174,4 +187,8 @@ double LineandLine(Line2D l1,Line2D l2){
     auto result=(l1.point-l2.point).dot(dir);
     result=sqrt((l1.point-l2.point).squaredNorm()-result*result);
     return result;
+}
+
+double angleBetweenPlane(Plane x,Plane y){
+    double angle=x.dirc.normalized().dot(y.dirc.normalized());
 }
