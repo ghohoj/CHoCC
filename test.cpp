@@ -56,13 +56,18 @@ void test4(){
     cout<<x;
 }
 
-//测试
-
-//测试三角剖分
+//测试gataindata.h文件
 
 
 
-//测试采样
+
+
+//测试采样（圆形）
+
+//测试写入文件
+
+
+//测试getedgeofcone
 
 
 

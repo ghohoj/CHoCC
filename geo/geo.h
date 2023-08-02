@@ -84,10 +84,27 @@ struct Circ
     Vector3d dir;
     double r;
     vector<int> passpoint;//这个是用来标记需要经过的点
+    vector<int> passface;//这个是用来标记需要经过的面
+    Vector3d vertica[2];
+    void getvertica(){
+        Matrix<double,1,3> equation(dir);
+        FullPivLU<Matrix<double,1,3>> solve(equation);
+        vertica[0]=(Matrix<double,3,2>(solve.kernel()).col(0)).normalized();
+        vertica[1]=dir.cross(vertica[0]).normalized();
+    }
+    Circ(Point3D center,Vector3d dir,double r):center(center),dir(dir),r(r){
+        getvertica();
+    }
+    Circ(){}
+    int geti(Point3D p,const int& num){
+        double angle=atan2((p-center).dot(vertica[1]),(p-center).dot(vertica[0]));
+        return int(round(angle/(2*M_PI)*num))%num;
+    }
 };
 
 struct edgeNum:pair<int,int>
 {
+    //下面的定义是为了方便map做索引
     edgeNum(int i,int j){
         this->first=max(i,j);
         this->second=min(i,j);

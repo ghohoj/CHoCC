@@ -23,6 +23,14 @@ Plane getPlanefromPoint(const vector<Point3D>& ps,const Point3D& o){
     return tmp;
 }
 
+bool IfPlanefromPointRight(const vector<Point3D>& ps,const Point3D& o){
+    Plane tmp=getPlanefromPoint(ps[0],ps[1],ps[2]);
+    if((o-tmp.point).dot(tmp.dirc)<0){
+        return false;
+    }
+    return true;
+}
+
 //平面截取圆上点，一般有两个点
 vector<Point3D> getPonintfromPlanandCirc(Plane p,Circ c){
     vector<Point3D> result;
