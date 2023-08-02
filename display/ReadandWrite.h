@@ -1,4 +1,5 @@
 //写入一个点的字符串
+# pragma once
 #include<algorithm>
 #include <numeric>
 #include<string>
@@ -8,12 +9,12 @@
 #include"../display/getindata.h"
 
 void pointstring(const Point3D& x,fstream& f){
-    f<<"v "<<x.x()<<" "<<x.y()<<" "<<x.y()<<" "<<x.z()<<setprecision(5)<<endl;
+    f<<"v "<<x.x()<<" "<<x.y()<<" "<<x.z()<<setprecision(5)<<endl;
 }
 //写入一个面的字符串
 //ToDo这里有个天坑就是怎么做好这个面的方向，后面要检查这个事情
 void pointstring(const Vector3i& x,fstream& f){
-    f<<"f "<<x.x()<<" "<<x.y()<<" "<<x.z()<<endl;
+    f<<"f "<<x.x()+1<<" "<<x.y()+1<<" "<<x.z()+1<<endl;
 }
 
 //最后的写入文件
@@ -47,5 +48,6 @@ Interface readTxt(string file)
         tmp.dir.push_back(Vector3d(x,y,z).normalized());
     }
     infile.close();             //关闭文件输入流 
+    getR(tmp);
     return tmp;
 }

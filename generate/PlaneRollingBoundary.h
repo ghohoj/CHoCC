@@ -1,5 +1,5 @@
 //这里是对3.3Plane-rolling boundary evaluation的复现
-#pragma once
+# pragma once
 
 #include"../geo/geocal.h"
 #include"../cal/quadequal.h"
@@ -48,11 +48,19 @@ vector<Point3D> solveapollonius(const Sphere& s,const vector<double>& angle,cons
     return result;
 }
 
+Struct3d::Struct3d(Interface g){
+    circs.resize(g.dir.size());
+    //初始化圆
+    for(int i=0;i<g.dir.size();i++){
+        circs[i]=Circ(g.position+sqrt(g.R*g.R-g.r*g.r)*g.dir[i],g.dir[i],g.r);
+    }
+    sphere=Sphere(g.r,g.position);
+    Planerolling();
+}
+
 //3.3中的Plane-rolling算法
-Struct3d Planerolling(Interface& g){
-    Struct3d result(g);
-    auto sphere=Sphere(g.R,Point3D(0,0,0));
-    //找第一个平面
+void Struct3d::Planerolling(){
+    // 找第一个平面
     //     The initialization step picks a random circle, C i . Let Π i denote
     // the plane that contains it. Then, we consider all possible pairs
     // from the remaining circles, C j and C k , forming a triplet of circles
@@ -66,32 +74,32 @@ Struct3d Planerolling(Interface& g){
     // which we add to the boundary B. We also add the three edges of
     // the triangle to a list of exposed borders.
     Vector3i tmpVector3i;
-    //记录最小的角度
-    //记录暂时的角度
+    //记录最小的角度,暂时的角度
     double minangle=100,tmpangle;
     //记录圆柱方向
     vector<Point3D> tmpdirs;
     //记录圆柱夹角,由于半径固定，这个值也固定
     vector<double> tmpangles;
-    tmpangles.push_back(asin(g.r/g.R));
-    tmpangles.push_back(asin(g.r/g.R));
-    tmpangles.push_back(asin(g.r/g.R));
     //连接三个点的坐标位置
     vector<Point3D> tmpsolution,solution;
-    
     int tmpint;
     //记录三个点暂时生成的平面
     Plane tmpplane,plane;
     
-    for(int i=1;i<g.dir.size();i++){
-        for(int j=i+1;j<g.dir.size();j++){
+    for(int i=1;i<circs.size();i++){
+        for(int j=i+1;j<circs.size();j++){
             tmpdirs.clear();
-            tmpdirs.push_back(g.dir[0]);
-            tmpdirs.push_back(g.dir[i]);
-            tmpdirs.push_back(g.dir[j]);
+            tmpdirs.push_back(circs[0].dir);
+            tmpdirs.push_back(circs[i].dir);
+            tmpdirs.push_back(circs[j].dir);
+            tmpangles.clear();
+            tmpangles.push_back(asin(circs[0].r/sphere.r));
+            tmpangles.push_back(asin(circs[i].r/sphere.r));
+            tmpangles.push_back(asin(circs[j].r/sphere.r));
+            
             tmpsolution=solveapollonius(sphere,tmpangles,tmpdirs);
-            tmpplane=getPlanefromPoint(tmpsolution,g.position);
-            tmpangle=angleBetweenPlane(Plane(g.dir[0]),tmpplane);
+            tmpplane=getPlanefromPoint(tmpsolution,sphere.center);
+            tmpangle=angleBetweenPlane(Plane(circs[0].dir),tmpplane);
             if(tmpangle<minangle){
                 tmpVector3i<<0,i,j;
                 solution=tmpsolution;
@@ -102,13 +110,13 @@ Struct3d Planerolling(Interface& g){
     vector<Vector3d> points;
     int points_nums;//记录点的编号
     //初始化点
-    result.ps.insert(points.end(), solution.begin(), solution.end());
+    ps.insert(points.end(), solution.begin(), solution.end());
     //初始化三角形
-    result.tris.push_back(Vector3i(points_nums,points_nums+1,points_nums+2));
+    tris.push_back(Vector3i(points_nums,points_nums+1,points_nums+2));
     //初始化圆圈需要经过的点编号
-    result.circs[tmpVector3i.x()].passpoint.push_back(points_nums);
-    result.circs[tmpVector3i.y()].passpoint.push_back(points_nums+1);
-    result.circs[tmpVector3i.z()].passpoint.push_back(points_nums+2);
+    circs[tmpVector3i.x()].passpoint.push_back(points_nums);
+    circs[tmpVector3i.y()].passpoint.push_back(points_nums+1);
+    circs[tmpVector3i.z()].passpoint.push_back(points_nums+2);
     points_nums+=3;
     //第一个是指代圆的编号，第二个指代点的编号
     map<edgeNum,edgeNum> connect;
@@ -123,6 +131,7 @@ Struct3d Planerolling(Interface& g){
     repeat[edgeNum(tmpVector3i.x(),tmpVector3i.y())]=false;
     repeat[edgeNum(tmpVector3i.y(),tmpVector3i.z())]=false;
     repeat[edgeNum(tmpVector3i.x(),tmpVector3i.z())]=false;
+
     //现在开始贪婪的寻找边
     //     Then, as long as the list of exposed borders is not empty,
     // we pop one of the exposed borders from the list, say between
@@ -146,16 +155,16 @@ Struct3d Planerolling(Interface& g){
 
         
         minangle=100;
-        for(int i=0;i<g.dir.size();i++){
+        for(int i=0;i<circs.size();i++){
             if(i==edge.first||i==edge.second||repeat[edgeNum(i,edge.first)]){
                 continue;
             }
             tmpdirs.clear();
-            tmpdirs.push_back(g.dir[edge.first]);
-            tmpdirs.push_back(g.dir[edge.second]);
-            tmpdirs.push_back(g.dir[i]);
+            tmpdirs.push_back(circs[edge.first].dir);
+            tmpdirs.push_back(circs[edge.second].dir);
+            tmpdirs.push_back(circs[i].dir);
             tmpsolution=solveapollonius(sphere,tmpangles,tmpdirs);
-            tmpplane=getPlanefromPoint(tmpsolution,g.position);
+            tmpplane=getPlanefromPoint(tmpsolution,sphere.center);
             //判断方向的方法：出现再
             tmpangle=angleBetweenPlane(Plane(dirt.normalized(),dirtpoint),tmpplane);
             if(tmpangle<minangle){
@@ -170,15 +179,14 @@ Struct3d Planerolling(Interface& g){
         edge_info.push(make_pair(edgeNum(edge.first,tmpint),make_pair(plane.dirc,edge.second)));
         edge_info.push(make_pair(edgeNum(edge.second,tmpint),make_pair(plane.dirc,edge.first)));
         //初始化点
-        result.ps.insert(points.end(), solution.begin(), solution.end());
+        ps.insert(points.end(), solution.begin(), solution.end());
         //初始化三角形
-        result.tris.push_back(Vector3i(points_nums,points_nums+1,points_nums+2));
+        tris.push_back(Vector3i(points_nums,points_nums+1,points_nums+2));
         //初始化圆圈需要经过的点编号
-        result.circs[tmpVector3i.x()].passpoint.push_back(points_nums);
-        result.circs[tmpVector3i.y()].passpoint.push_back(points_nums+1);
-        result.circs[tmpVector3i.z()].passpoint.push_back(points_nums+2);
+        circs[tmpVector3i.x()].passpoint.push_back(points_nums);
+        circs[tmpVector3i.y()].passpoint.push_back(points_nums+1);
+        circs[tmpVector3i.z()].passpoint.push_back(points_nums+2);
         points_nums+=3;
     }
     //从repeat中取出所有的边
-    return result;
 }

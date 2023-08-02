@@ -1,4 +1,4 @@
-#pragma once
+# pragma once
 #include "../geo/geooutput.h"
 #include<vector>
 #include"../cal/equal.h"
@@ -198,5 +198,6 @@ double LineandLine(Line2D l1,Line2D l2){
 }
 
 double angleBetweenPlane(Plane x,Plane y){
-    double angle=x.dirc.normalized().dot(y.dirc.normalized());
+    double cosangle=x.dirc.normalized().dot(y.dirc.normalized());
+    return acos(cosangle);
 }

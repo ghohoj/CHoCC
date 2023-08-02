@@ -1,9 +1,11 @@
+//求解一元二次方程
+# pragma once
 #include <iostream>
 #include <cmath>
 #include<vector>
 using namespace std;
  
-vector<double> quadraticequation(float a,float b,float c){
+vector<double> quadraticequation(double a,double b,double c){
     double x1, x2, discriminant, realPart, imaginaryPart;
     vector<double> result;
     discriminant = b*b - 4*a*c;

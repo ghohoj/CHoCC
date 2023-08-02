@@ -1,4 +1,5 @@
 //把struct转化为print3d格式的数据，这样可以比较好的打印
+# pragma once
 #include<iostream>
 #include<vector>
 #include<math.h>
@@ -6,24 +7,10 @@
 #include"../geo/geocal.h"
 #include"../display/Struct3d.h"
 using namespace std;
-const int acc=19;//圆一圈采样acc个点
 
-struct print3d
-{
-    vector<Point3D> p;
-    vector<Vector3i> f;
-};
-struct coneedgepoint
-{
-    //点所在圆的编号（这里两个数字，顺序一致）
-    int pnums[2];
-    //点所在圆边上的编号
-    int cnum;
-};
-struct geodisplay
-{
-    coneedgepoint p[2];
-};
+
+
+
 
 //输出a到b之间的整数，注意如果a<b，会循环，例如再0到18循环，a=17，b=3，变成17,18,0,1,2,3
 vector<int> getp(int a,int b){
@@ -66,61 +53,58 @@ void getedgeofcone(const vector<int>& getp1,const vector<int>& getp2,vector<Vect
     int s2=getp2.size();
     int i=0;
     int j=getp2.size()-1;
-    while (i<s1&&j<s2)
+    while (i<s1&&j>0)
     {
         if(compare(i,s1,s2-j-1,s2)){
             i++;
             result.push_back(Vector3i(getp1[i],getp1[i-1],getp2[j]));
+            cout<<i<<" "<<i-1<<" "<<j<<endl;
         }
-        else
-        {
+        else{
             j--;
             result.push_back(Vector3i(getp1[i],getp2[j],getp2[j+1]));
+            cout<<i<<" "<<j<<" "<<j+1<<endl;
         }
     }
+}
+
+//画圆形
+void ShowCirc(Circ &cir,print3d& result){
+    int psize=result.p.size();
+    cir.getvertica();
+    //加点
+    for(int i=0;i<acc;i++){
+        result.p.push_back(cir.center+cir.vertica[0]*sin(2*M_PI/acc*i)+cir.vertica[1]*cos(2*M_PI/acc*i));
+    }
+    result.p.push_back(cir.center);
+    //加面
+    for(int j=0;j<acc;j++){
+        result.f.push_back(Vector3i((psize+j)%acc,(psize+j+1)%acc,psize+acc));
+    }
+}
+
+void ShowTri(Struct3d& s,print3d& result,int i){
+    //这三个点的圆位置序号  s.circsnum[i].x();
+    //三个点坐标在ps中的编号 s.tris[i].x()
+    //这三个点的坐标  s.ps[s.tris[i].x()];
+    //这三个点映射到的圆的第几个点（这里采取就近选择）  (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()],acc)
+    // 在加上圆本身的坐标偏移  (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()],acc)+s.circs[s.circsnum[i].x()]*(acc+1)
+    auto tmpVector3i=Vector3i(
+        (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()])+s.circsnum[i].x()*(acc+1),
+        (s.circs[s.circsnum[i].y()]).geti(s.ps[s.tris[i].y()])+s.circsnum[i].y()*(acc+1),
+        (s.circs[s.circsnum[i].z()]).geti(s.ps[s.tris[i].z()])+s.circsnum[i].z()*(acc+1)
+    );
+    result.f.push_back(tmpVector3i);
 }
 
 //这段的目的是完整的展示一个接口的形状，并不适合作为每个接口的计算方程，那样复杂度太高
 void ShowGeo(Struct3d& s,print3d& result){
     for(auto cir:s.circs){
-        //这里是计算与圆的法向量垂直的两个向量
-        cir.getvertica();
-        //写入圆上的取点19个,再写入中心放在第20个点
-        for(int i=0;i<acc;i++){
-            result.p.push_back(cir.center+cir.vertica[0]*sin(2*M_PI/acc*i)+cir.vertica[1]*cos(2*M_PI/acc*i));
-            result.p.push_back(cir.center);
-        }
-    }
-    //加入圆形的面
-    for(int i=0;i<s.circs.size();i++){
-        //边界采样19个点则生成18个三角形
-        for(int j=0;j<acc-1;j++){
-            result.f.push_back(Vector3i(i*(acc+1)+j,i*(acc+1)+j+1,(i+1)*(acc+1)));
-        }
+        ShowCirc(cir,result);
     }
     //加入大三角形
     for(int i=0;i<s.circsnum.size();i++){
-        //这三个点的圆位置序号  s.circsnum[i].x();
-        //三个点坐标在ps中的编号 s.tris[i].x()
-        //这三个点的坐标  s.ps[s.tris[i].x()];
-        //这三个点映射到的圆的第几个点（这里采取就近选择）  (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()],acc)
-        // 在加上圆本身的坐标偏移  (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()],acc)+s.circs[s.circsnum[i].x()]*(acc+1)
-        auto tmpVector3i=Vector3i(
-            (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()],acc)+s.circsnum[i].x()*(acc+1),
-            (s.circs[s.circsnum[i].y()]).geti(s.ps[s.tris[i].y()],acc)+s.circsnum[i].y()*(acc+1),
-            (s.circs[s.circsnum[i].z()]).geti(s.ps[s.tris[i].z()],acc)+s.circsnum[i].z()*(acc+1)
-        );
-
-        // 前面加入circsnum的时候已经反转过方向
-        // 这里是调整一下面的方向问题，使得法向量朝外面
-        // vector<Point3D> tmpvectorPoint3D;
-        // tmpvectorPoint3D.push_back(s.ps[tmpVector3i.x()]);
-        // tmpvectorPoint3D.push_back(s.ps[tmpVector3i.y()]);
-        // tmpvectorPoint3D.push_back(s.ps[tmpVector3i.z()]);
-        // if(!IfPlanefromPointRight(tmpvectorPoint3D,s.center)){
-        //     tmpVector3i<<tmpVector3i.x(),tmpVector3i.z(),tmpVector3i.y();
-        // }
-        result.f.push_back(tmpVector3i);
+        ShowTri(s,result,i);
     }
     //找到每个椭圆锥的四个点
     map<edgeNum,vector<int>> ms;
@@ -202,3 +186,16 @@ void ShowACHoCC(Struct3d& s,print3d& result){
 
 
 //
+
+
+
+
+// 前面加入circsnum的时候已经反转过方向
+// 这里是调整一下面的方向问题，使得法向量朝外面
+// vector<Point3D> tmpvectorPoint3D;
+// tmpvectorPoint3D.push_back(s.ps[tmpVector3i.x()]);
+// tmpvectorPoint3D.push_back(s.ps[tmpVector3i.y()]);
+// tmpvectorPoint3D.push_back(s.ps[tmpVector3i.z()]);
+// if(!IfPlanefromPointRight(tmpvectorPoint3D,s.center)){
+//     tmpVector3i<<tmpVector3i.x(),tmpVector3i.z(),tmpVector3i.y();
+// }

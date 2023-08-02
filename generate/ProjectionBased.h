@@ -1,6 +1,6 @@
 //这个文件是一个方法的运行函数所在
 //是对3.2. Projection-based boundary evaluation的复现
-#pragma once
+# pragma once
 #include"../geo/geocal.h"
 
 

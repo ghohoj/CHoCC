@@ -3,7 +3,7 @@
 // (3) computing the closest projections of the verticesof that diagram onto the closest 3 disks
 //但是文章没有提及怎么计算叫做closest 3 disks，因此我取巧了一下，直接用Delaunay三角剖分划分好了三角形再映射回去
 //当然这并不重要，因为我之后和文章都一样采取了3.3的方法，这个只是单纯的为了复现3.2的思路
-#pragma once
+# pragma once
 #include "../Delaunay/TriangleMesh.h"
 #include<algorithm>
 #include<map>

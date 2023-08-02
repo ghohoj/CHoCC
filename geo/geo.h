@@ -2,9 +2,12 @@
 #include<iostream>
 #include<ostream>
 #include<Eigen/Dense>
+#include<vector>
 using namespace std;
 using namespace Eigen;
 
+
+const int acc=19;//圆一圈采样acc个点
 typedef Vector3d Point3D;
 typedef Vector2d Point2D;
 
@@ -25,7 +28,7 @@ struct Sphere
 {
     double r;
     Point3D center;
-    Sphere(double r,Point3D center):r(r),center(center){}
+    Sphere(double r=-1,Point3D center=Vector3d(0,0,0)):r(r),center(center){}
 };
 
 struct Cone
@@ -58,12 +61,6 @@ struct Triangle2D
     Point2D c;
 };
 
-struct Circ
-{
-    Point3D center;
-    Vector3d dir;
-    double r;
-};
 
 struct Plane
 {
@@ -92,15 +89,17 @@ struct Circ
         vertica[0]=(Matrix<double,3,2>(solve.kernel()).col(0)).normalized();
         vertica[1]=dir.cross(vertica[0]).normalized();
     }
-    Circ(Point3D center,Vector3d dir,double r):center(center),dir(dir),r(r){
+    Circ(Point3D center=Vector3d(0,0,0),Vector3d dir=Vector3d(0,0,1),double r=1):center(center),dir(dir),r(r){
+        dir=dir.normalized();
         getvertica();
     }
-    Circ(){}
-    int geti(Point3D p,const int& num){
+    int geti(Point3D p,const int& num=acc){
         double angle=atan2((p-center).dot(vertica[1]),(p-center).dot(vertica[0]));
         return int(round(angle/(2*M_PI)*num))%num;
     }
 };
+
+
 
 struct edgeNum:pair<int,int>
 {
@@ -120,4 +119,20 @@ struct edgeNum:pair<int,int>
             return false;
         }
     }
+};
+struct print3d
+{
+    vector<Point3D> p;
+    vector<Vector3i> f;
+};
+struct coneedgepoint
+{
+    //点所在圆的编号（这里两个数字，顺序一致）
+    int pnums[2];
+    //点所在圆边上的编号
+    int cnum;
+};
+struct geodisplay
+{
+    coneedgepoint p[2];
 };

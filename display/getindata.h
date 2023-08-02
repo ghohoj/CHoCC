@@ -7,6 +7,7 @@
 #include <fstream>
 #include <cassert>
 #include <string>
+#include<math.h>
 using namespace std;
 using namespace Eigen;
 struct Interface
@@ -33,11 +34,13 @@ void getR(Interface& g){
     double anglecos=1;
     for(int i=0;i<g.dir.size();i++){
         for(int j=i+1;j<g.dir.size();j++){
-            anglecos=min(g.dir[i].dot(g.dir[j]),anglecos);
+            anglecos=min(abs(g.dir[i].dot(g.dir[j])),abs(anglecos));
         }
     }
+    anglecos=max(double(-1),anglecos);
+    anglecos=min(double(1),anglecos);
     double angle=acos(anglecos);
-    double R=g.r/tan(angle/2);
+    double R=g.r/cos(angle/2);
     g.R=2*R;
 }
 

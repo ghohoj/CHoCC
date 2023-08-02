@@ -1,6 +1,5 @@
 //解决三个的圆的相切圆计算问题
-#pragma once
-
+# pragma once
 #include"../geo/geocal.h"
 #include"../cal/quadequal.h"
 #include<algorithm>
