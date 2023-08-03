@@ -17,7 +17,7 @@ ostream & operator<<(ostream & out,const Circ& spec){
     out<<"类型：圆形"<<endl;
     out<<"所在法向量："<<spec.dir.x()<<" "<<spec.dir.y()<<" "<<spec.dir.z()<<endl;
     out<<"面向量1:"<<spec.vertica[0].x()<<" "<<spec.vertica[0].y()<<" "<<spec.vertica[0].z()<<endl;
-    out<<"面向量1:"<<spec.vertica[1].x()<<" "<<spec.vertica[1].y()<<" "<<spec.vertica[1].z()<<endl;
+    out<<"面向量2:"<<spec.vertica[1].x()<<" "<<spec.vertica[1].y()<<" "<<spec.vertica[1].z()<<endl;
     out<<"半径："<<spec.r<<endl;
     out<<"圆心："<<spec.center.x()<<" "<<spec.center.y()<<" "<<spec.center.z()<<endl;
     return out;
@@ -52,7 +52,7 @@ template<typename T>
 ostream & operator<<(ostream & out,const vector<T>& v){
     out<<"类型：容器"<<endl;
     for(auto i:v){
-        out<<i<<" ";
+        out<<i<<" "<<endl;
     }
     out<<endl;
     return out;
@@ -70,9 +70,9 @@ ostream & operator<<(ostream & out,const Struct3d& v){
     
     out<<endl;
     out<<"表面圆形数目:"<<v.circs.size()<<endl;
-    out<<"标记大三角形数目:"<<endl;
-    out<<"圆标记的编号数目:"<<endl;
-
+    out<<"标记大三角形数目:"<<v.tris.size()<<endl;
+    out<<"圆标记的编号数目:"<<v.circsnum.size()<<endl;
+    out<<"连线需要的点数目:"<<v.ps.size()<<endl;
     out<<endl;
     out<<"表面圆形:"<<endl;
     for(auto i:v.circs){
@@ -84,6 +84,10 @@ ostream & operator<<(ostream & out,const Struct3d& v){
     }
     out<<"圆标记的编号:"<<endl;
     for(auto i:v.circsnum){
+        out<<i.x()<<" "<<i.y()<<" "<<i.z()<<endl;
+    }
+    out<<"连线需要的点:"<<endl;
+    for(auto i:v.ps){
         out<<i.x()<<" "<<i.y()<<" "<<i.z()<<endl;
     }
     out<<"----------------------"<<endl;

@@ -21,7 +21,7 @@ vector<int> getp(int a,int b){
         }
     }
     else if(a==b){
-        cout<<"出现错误,a不可能等于b";
+        result.push_back(a);
     }
     else{
         for(int i=a;i<=((a/(acc+1)+1)*(acc+1)-2);i++){
@@ -53,17 +53,29 @@ void getedgeofcone(const vector<int>& getp1,const vector<int>& getp2,vector<Vect
     int s2=getp2.size();
     int i=0;
     int j=getp2.size()-1;
-    while (i<s1&&j>0)
+    while (i<s1-1&&j>0)
     {
         if(compare(i,s1,s2-j-1,s2)){
             i++;
             result.push_back(Vector3i(getp1[i],getp1[i-1],getp2[j]));
-            cout<<i<<" "<<i-1<<" "<<j<<endl;
         }
         else{
             j--;
             result.push_back(Vector3i(getp1[i],getp2[j],getp2[j+1]));
-            cout<<i<<" "<<j<<" "<<j+1<<endl;
+        }
+    }
+    if(j==0){
+        while (i<s1-1)
+        {
+            i++;
+            result.push_back(Vector3i(getp1[i],getp1[i-1],getp2[j]));
+        }
+    }
+    else{
+        while (j>0)
+        {
+            j--;
+            result.push_back(Vector3i(getp1[i],getp2[j],getp2[j+1]));
         }
     }
 }
@@ -74,12 +86,12 @@ void ShowCirc(Circ &cir,print3d& result){
     cir.getvertica();
     //加点
     for(int i=0;i<acc;i++){
-        result.p.push_back(cir.center+cir.vertica[0]*sin(2*M_PI/acc*i)+cir.vertica[1]*cos(2*M_PI/acc*i));
+        result.p.push_back(cir.center+cir.vertica[0]*cir.r*sin(2*M_PI/acc*i)+cir.vertica[1]*cir.r*cos(2*M_PI/acc*i));
     }
     result.p.push_back(cir.center);
     //加面
     for(int j=0;j<acc;j++){
-        result.f.push_back(Vector3i((psize+j)%acc,(psize+j+1)%acc,psize+acc));
+        result.f.push_back(Vector3i(psize+(j)%acc,psize+(j+1)%acc,psize+acc));
     }
 }
 
@@ -106,33 +118,33 @@ void ShowGeo(Struct3d& s,print3d& result){
     for(int i=0;i<s.circsnum.size();i++){
         ShowTri(s,result,i);
     }
-    //找到每个椭圆锥的四个点
+    // 找到每个椭圆锥的四个点
     map<edgeNum,vector<int>> ms;
     for(int i=0;i<s.circsnum.size();i++){
         ms[edgeNum(s.circsnum[i].x(),s.circsnum[i].y())].push_back(
-            (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()],acc)+s.circsnum[i].x()*(acc+1)
+            (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()])+s.circsnum[i].x()*(acc+1)
         );
         ms[edgeNum(s.circsnum[i].x(),s.circsnum[i].y())].push_back(
-            (s.circs[s.circsnum[i].y()]).geti(s.ps[s.tris[i].y()],acc)+s.circsnum[i].y()*(acc+1)
+            (s.circs[s.circsnum[i].y()]).geti(s.ps[s.tris[i].y()])+s.circsnum[i].y()*(acc+1)
         );
         ms[edgeNum(s.circsnum[i].y(),s.circsnum[i].z())].push_back(
-            (s.circs[s.circsnum[i].y()]).geti(s.ps[s.tris[i].y()],acc)+s.circsnum[i].y()*(acc+1)
+            (s.circs[s.circsnum[i].y()]).geti(s.ps[s.tris[i].y()])+s.circsnum[i].y()*(acc+1)
         );
         ms[edgeNum(s.circsnum[i].y(),s.circsnum[i].z())].push_back(
-            (s.circs[s.circsnum[i].z()]).geti(s.ps[s.tris[i].z()],acc)+s.circsnum[i].z()*(acc+1)
+            (s.circs[s.circsnum[i].z()]).geti(s.ps[s.tris[i].z()])+s.circsnum[i].z()*(acc+1)
         );
         ms[edgeNum(s.circsnum[i].x(),s.circsnum[i].z())].push_back(
-            (s.circs[s.circsnum[i].z()]).geti(s.ps[s.tris[i].z()],acc)+s.circsnum[i].z()*(acc+1)
+            (s.circs[s.circsnum[i].z()]).geti(s.ps[s.tris[i].z()])+s.circsnum[i].z()*(acc+1)
         );
         ms[edgeNum(s.circsnum[i].x(),s.circsnum[i].z())].push_back(
-            (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()],acc)+s.circsnum[i].x()*(acc+1)
+            (s.circs[s.circsnum[i].x()]).geti(s.ps[s.tris[i].x()])+s.circsnum[i].x()*(acc+1)
         );
     }
     //加入椭圆锥面，
     //这样整个图形就都被切割为了三角形，将椭圆锥切割为三角形
     for(auto m:ms){
-        vector<int> ep1=getp(m.second[0],m.second[2]);
-        vector<int> ep2=getp(m.second[1],m.second[3]);
+        vector<int> ep1=getp(m.second[0],m.second[3]);
+        vector<int> ep2=getp(m.second[2],m.second[1]);
         getedgeofcone(ep1,ep2,result.f);
     }
 }

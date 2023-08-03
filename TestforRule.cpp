@@ -169,14 +169,5 @@ using namespace Eigen;
  
 int main()
 {
-	Vector3d x;
-	x << 1,2,3;
-	Matrix<double,1,3> A(x);
-	Vector2d b;
-	b << 0,0;
-
-	FullPivLU<Matrix<double,1,3>> l(A);
-	auto u=l.kernel();
-	Matrix<double,3,2> tmp(u);
-	cout<<tmp.col(0)<<endl;
+	cout<<(-41)%20;
 }

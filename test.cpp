@@ -79,24 +79,6 @@ void test5(){
 }
 
 
-//测试ShowGeo的所有前置的函数
-void test6(){
-    cout<<getp(1,18);
-    cout<<getp(20,39);
-    vector<Vector3i> tmpV;
-    getedgeofcone(getp(1,18),getp(20,38),tmpV);
-    print3d result;
-    for(int i=0;i<acc;i++){
-        result.p.push_back(Vector3d(0,i,0));
-    }
-    result.p.push_back(Vector3d(1,0,0));
-    for(int i=0;i<acc;i++){
-        result.p.push_back(Vector3d(0,acc-i-1,1));
-    }
-    result.p.push_back(Vector3d(1,0,1));
-    result.f=tmpV;
-    printobj(result,"./data/testshape4");
-}
 
 
 //测试采样（圆形）
@@ -114,13 +96,80 @@ void test8(){
     cout<<q;
     Struct3d x(q);
     cout<<x;
+
+    q=readTxt("./data/testshape1.txt");
+    cout<<q;
+    Struct3d y(q);
+    cout<<y;
+}
+
+//apollonius的测试
+void test9(){
+    Sphere s;
+    s.r=10;
+    vector<double> angle;
+    angle.push_back(asin(1/s.r));
+    angle.push_back(asin(1/s.r));
+    angle.push_back(asin(1/s.r));
+    vector<Vector3d> dirs;
+    dirs.push_back(Vector3d(1,0,0));
+    dirs.push_back(Vector3d(0,1,0));
+    dirs.push_back(Vector3d(0,0,1));
+    cout<<solveapollonius(s,angle,dirs);
 }
 
 
 
 
+//测试圆的geti
+void test11(){
+    Circ c;
+    c.getvertica();
+    cout<<c;
+    cout<<c.geti(Vector3d(0.5,0.4,0),8);
+}
 
+//测试ShowGeo的所有前置的函数
+void test6(){
+    int acc=5;
+    cout<<getp(0,acc-1);
+    cout<<getp(acc+1,2*acc);
+    vector<Vector3i> tmpV;
+    getedgeofcone(getp(0,acc-1),getp(acc+1,2*acc),tmpV);
+    print3d result;
+    for(int i=0;i<acc;i++){
+        result.p.push_back(Vector3d(0,i,0));
+    }
+    result.p.push_back(Vector3d(1,0,0));
+    for(int i=0;i<acc;i++){
+        result.p.push_back(Vector3d(0,acc-i-1,1));
+    }
+    result.p.push_back(Vector3d(1,0,1));
+    result.f=tmpV;
+    printobj(result,"./data/testshape4");
+}
+
+//测试使用testshape2展示一下接口
+void test10(){
+    auto q=readTxt("./data/testshape2.txt");
+    cout<<q;
+    Struct3d x(q);
+    cout<<x;
+    print3d result;
+    ShowGeo(x,result);
+    printobj(result,"./data/testshape6");
+}
+//测试使用testshape1展示一下接口
+void test12(){
+    auto q=readTxt("./data/testshape1.txt");
+    cout<<q;
+    Struct3d x(q);
+    cout<<x;
+    print3d result;
+    ShowGeo(x,result);
+    printobj(result,"./data/testshape7");
+}
 
 int main(){
-    test8();
+    test10();
 }

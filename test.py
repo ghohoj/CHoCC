@@ -1,15 +1,29 @@
-import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-fig, ax = plt.subplots(figsize=(4, 4))
-cirs=[[1,2,3]]
-def plot_cir(r,xc,yc):
-    theta = np.linspace(0, 2 * np.pi, 200)
-    x = r*np.cos(theta)+xc
-    y = r*np.sin(theta)+yc
-    return x,y
-for cir in cirs:
-    ax.plot(*plot_cir(*cir), color="darkred", linewidth=2)
-
-
-ax.axis("equal")
+import numpy as np
+ 
+ 
+def randrange(n, vmin, vmax):
+    '''
+    Helper function to make an array of random numbers having shape (n, )
+    with each number distributed Uniform(vmin, vmax).
+    '''
+    return (vmax - vmin)*np.random.rand(n) + vmin
+ #np.random.rand(n)产生1*n数组，元素大小0-1
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ 
+n = 100
+ 
+# For each set of style and range settings, plot n random points in the box
+# defined by x in [23, 32], y in [0, 100], z in [zlow, zhigh].
+xs=[0]
+ys=[-7.07]
+zs=[-7.07]
+ax.scatter(xs, ys, zs)
+ 
+ax.set_xlabel('X Label')
+ax.set_ylabel('Y Label')
+ax.set_zlabel('Z Label')
+ 
 plt.show()

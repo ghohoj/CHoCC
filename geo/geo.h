@@ -7,7 +7,7 @@ using namespace std;
 using namespace Eigen;
 
 
-const int acc=19;//圆一圈采样acc个点
+const int acc=49;//圆一圈采样acc个点
 typedef Vector3d Point3D;
 typedef Vector2d Point2D;
 
@@ -94,7 +94,10 @@ struct Circ
         getvertica();
     }
     int geti(Point3D p,const int& num=acc){
-        double angle=atan2((p-center).dot(vertica[1]),(p-center).dot(vertica[0]));
+        double angle=atan2((p-center).dot(vertica[0]),(p-center).dot(vertica[1]));
+        if(angle<0){
+            angle+=2*M_PI;
+        }
         return int(round(angle/(2*M_PI)*num))%num;
     }
 };
@@ -120,6 +123,7 @@ struct edgeNum:pair<int,int>
         }
     }
 };
+
 struct print3d
 {
     vector<Point3D> p;

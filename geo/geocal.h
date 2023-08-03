@@ -7,7 +7,7 @@
 Plane getPlanefromPoint(const Point3D& a,const Point3D& b,const Point3D& c){
     Plane result;
     result.point=a;
-    result.dirc=(a-b).cross(b-c);
+    result.dirc=(b-a).cross(c-a);
     return result;
 }
 Plane getPlanefromPoint(const vector<Point3D>& ps){
@@ -17,7 +17,7 @@ Plane getPlanefromPoint(const vector<Point3D>& ps){
 //这里的o点要求在向量的反面
 Plane getPlanefromPoint(const vector<Point3D>& ps,const Point3D& o){
     Plane tmp=getPlanefromPoint(ps[0],ps[1],ps[2]);
-    if((o-tmp.point).dot(tmp.dirc)<0){
+    if((tmp.point-o).dot(tmp.dirc)<0){
         tmp.dirc=-tmp.dirc;
     }
     return tmp;
@@ -25,10 +25,10 @@ Plane getPlanefromPoint(const vector<Point3D>& ps,const Point3D& o){
 
 bool IfPlanefromPointRight(const vector<Point3D>& ps,const Point3D& o){
     Plane tmp=getPlanefromPoint(ps[0],ps[1],ps[2]);
-    if((o-tmp.point).dot(tmp.dirc)<0){
+    if((tmp.point-o).dot(tmp.dirc)<0){
         return false;
     }
-    return true;
+    return true;//不需要交换点
 }
 
 //平面截取圆上点，一般有两个点
@@ -198,6 +198,15 @@ double LineandLine(Line2D l1,Line2D l2){
 }
 
 double angleBetweenPlane(Plane x,Plane y){
-    double cosangle=x.dirc.normalized().dot(y.dirc.normalized());
-    return acos(cosangle);
+    double anglecos=x.dirc.normalized().dot(y.dirc.normalized());
+    anglecos=max(double(-1),anglecos);
+    anglecos=min(double(1),anglecos);
+    return acos(anglecos);
+}
+
+double angleBetweenPlane(Vector3d dir,Plane y){
+    double anglecos=dir.normalized().dot(y.dirc.normalized());
+    anglecos=max(double(-1),anglecos);
+    anglecos=min(double(1),anglecos);
+    return acos(anglecos);
 }
