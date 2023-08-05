@@ -18,3 +18,21 @@ bool APequal(const double& a,const double& b,double pre=pre2){
     }
 }
 
+bool APequal(const Vector3d& a,const Vector3d& b,double pre=pre2){
+    if((a-b).norm()<pre){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+int getmod(int a,int b){
+    int result=a%b;
+    if(result<0){
+        return result+b;
+    }
+    else{
+        return result;
+    }
+}

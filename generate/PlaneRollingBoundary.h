@@ -162,24 +162,24 @@ void Struct3d::Planerolling(){
     while(!edge_info.empty()){
         //取出边和他的其他信息
         auto edgeint=edge_info.top();
-        auto edge=edgeNum(edgeint.first,edgeint.second);
+        auto edgekey=edgeNum(edgeint.first,edgeint.second);
         edge_info.pop();
 
 
-        if(repeat[edge]){
+        if(repeat[edgekey]){
             continue;
         }
         //记录这个边已经重复过了，后面不需要再重复
-        repeat[edge]=true;
+        repeat[edgekey]=true;
 
-        auto dirt=face[edge];
+        auto dirt=face[edgekey];
         
         minangle=100;
         for(int i=0;i<circs.size();i++){
-            if(i==edge.first||i==edge.second||
-            (repeattri.count(edge)&&repeattri[edge]==i)||
-            (repeat.count(edgeNum(i,edge.first))&&repeat[edgeNum(i,edge.first)])||
-            (repeat.count(edgeNum(i,edge.second))&&repeat[edgeNum(i,edge.second)])){
+            if(i==edgekey.first||i==edgekey.second||
+            (repeattri.count(edgekey)&&repeattri[edgekey]==i)||
+            (repeat.count(edgeNum(i,edgekey.first))&&repeat[edgeNum(i,edgekey.first)])||
+            (repeat.count(edgeNum(i,edgekey.second))&&repeat[edgeNum(i,edgekey.second)])){
                 continue;
             }
             tmpdirs.clear();
@@ -202,25 +202,25 @@ void Struct3d::Planerolling(){
 
 
         circsnum.push_back(tmpVector3i);
-        if(repeat.count(edgeNum(edge.first,tmpVector3i.x()))==0){
-            repeat[edgeNum(edge.first,tmpVector3i.x())]=false;
+        if(repeat.count(edgeNum(edgekey.first,tmpVector3i.x()))==0){
+            repeat[edgeNum(edgekey.first,tmpVector3i.x())]=false;
         }
         else{
-            repeat[edgeNum(edge.first,tmpVector3i.x())]=true;
+            repeat[edgeNum(edgekey.first,tmpVector3i.x())]=true;
         }
-        if(repeat.count(edgeNum(edge.second,tmpVector3i.x()))==0){
-            repeat[edgeNum(edge.second,tmpVector3i.x())]=false;
+        if(repeat.count(edgeNum(edgekey.second,tmpVector3i.x()))==0){
+            repeat[edgeNum(edgekey.second,tmpVector3i.x())]=false;
         }
         else{
-            repeat[edgeNum(edge.second,tmpVector3i.x())]=true;
+            repeat[edgeNum(edgekey.second,tmpVector3i.x())]=true;
         }
 
         edge_info.push(make_pair(edgeint.first,tmpVector3i.x()));
         edge_info.push(make_pair(tmpVector3i.x(),edgeint.second));
-        repeattri[edgeNum(edge.first,tmpVector3i.x())]=edge.second;
-        repeattri[edgeNum(edge.second,tmpVector3i.x())]=edge.first;
-        face[edgeNum(edge.first,tmpVector3i.x())]=plane.dirc;
-        face[edgeNum(edge.second,tmpVector3i.x())]=plane.dirc;
+        repeattri[edgeNum(edgekey.first,tmpVector3i.x())]=edgekey.second;
+        repeattri[edgeNum(edgekey.second,tmpVector3i.x())]=edgekey.first;
+        face[edgeNum(edgekey.first,tmpVector3i.x())]=plane.dirc;
+        face[edgeNum(edgekey.second,tmpVector3i.x())]=plane.dirc;
 
         //初始化点
         ps.insert(ps.end(), solution.begin(), solution.end());
@@ -233,5 +233,4 @@ void Struct3d::Planerolling(){
         circs[tmpVector3i.z()].passpoint.push_back(points_nums+2);
         points_nums+=3;
     }
-    //从repeat中取出所有的边
 }

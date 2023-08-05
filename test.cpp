@@ -77,18 +77,35 @@ void test5(){
     result.f.push_back(Vector3i(3,1,2));
     printobj(result,"./data/testshape3");
 }
-
-
-
-
+//测试ShowGeo的所有前置的函数
+//这个测试里面的函数已经被放到类的private了
+// void test6(){
+//     int acc=5;
+//     cout<<getp(0,acc-1);
+//     cout<<getp(acc+1,2*acc);
+//     vector<Vector3i> tmpV;
+//     getedgeofcone(getp(0,acc-1),getp(acc+1,2*acc),tmpV);
+//     print3d result;
+//     for(int i=0;i<acc;i++){
+//         result.p.push_back(Vector3d(0,i,0));
+//     }
+//     result.p.push_back(Vector3d(1,0,0));
+//     for(int i=0;i<acc;i++){
+//         result.p.push_back(Vector3d(0,acc-i-1,1));
+//     }
+//     result.p.push_back(Vector3d(1,0,1));
+//     result.f=tmpV;
+//     printobj(result,"./data/testshape4");
+// }
 //测试采样（圆形）
-void test7(){
-    print3d result;
-    Circ cir=Circ();
-    cout<<cir;
-    ShowCirc(cir,result);
-    printobj(result,"./data/testshape5");
-}
+//这个测试里面的函数已经被放到类的private了
+// void test7(){
+//     print3d result;
+//     Circ cir=Circ();
+//     cout<<cir;
+//     ShowCirc(cir,result);
+//     printobj(result,"./data/testshape5");
+// }
 
 //测试Plane-rolling
 void test8(){
@@ -117,47 +134,24 @@ void test9(){
     dirs.push_back(Vector3d(0,0,1));
     cout<<solveapollonius(s,angle,dirs);
 }
-
-
-
-
-//测试圆的geti
-void test11(){
-    Circ c;
-    c.getvertica();
-    cout<<c;
-    cout<<c.geti(Vector3d(0.5,0.4,0),8);
-}
-
-//测试ShowGeo的所有前置的函数
-void test6(){
-    int acc=5;
-    cout<<getp(0,acc-1);
-    cout<<getp(acc+1,2*acc);
-    vector<Vector3i> tmpV;
-    getedgeofcone(getp(0,acc-1),getp(acc+1,2*acc),tmpV);
-    print3d result;
-    for(int i=0;i<acc;i++){
-        result.p.push_back(Vector3d(0,i,0));
-    }
-    result.p.push_back(Vector3d(1,0,0));
-    for(int i=0;i<acc;i++){
-        result.p.push_back(Vector3d(0,acc-i-1,1));
-    }
-    result.p.push_back(Vector3d(1,0,1));
-    result.f=tmpV;
-    printobj(result,"./data/testshape4");
-}
-
 //测试使用testshape2展示一下接口
+
 void test10(){
     auto q=readTxt("./data/testshape2.txt");
     cout<<q;
     Struct3d x(q);
     cout<<x;
     print3d result;
-    ShowGeo(x,result);
+    CHoCC::ShowCHoCC(x,result);
     printobj(result,"./data/testshape6");
+}
+//测试圆的geti
+void test11(){
+    Circ c;
+    c.getvertica();
+    cout<<c;
+    cout<<c.getangle(Vector3d(0.5,0.5,0));
+    cout<<c.geti(Vector3d(0.5,0.5,0),8)<<endl;
 }
 //测试使用testshape1展示一下接口
 void test12(){
@@ -166,10 +160,30 @@ void test12(){
     Struct3d x(q);
     cout<<x;
     print3d result;
-    ShowGeo(x,result);
+    CHoCC::ShowCHoCC(x,result);
     printobj(result,"./data/testshape7");
+}
+//CNT的3d文件展示
+void test13(){
+    auto q=readTxt("./data/testshape1.txt");
+    cout<<q;
+    Struct3d x(q);
+    cout<<x;
+    print3d result;
+    CNT::ShowCNT(x,result);
+    printobj(result,"./data/testshape8");
+}
+//测试ACHoCC
+void test14(){
+    auto q=readTxt("./data/testshape1.txt");
+    cout<<q;
+    Struct3d x(q);
+    cout<<x;
+    print3d result;
+    ACHoCC::ShowACHoCC(x,result);
+    printobj(result,"./data/testshape9");
 }
 
 int main(){
-    test10();
+    test14();
 }

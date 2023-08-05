@@ -82,6 +82,12 @@ Point3D InvgetPoint3DPolar(Point3DPolar p,const Point3D& center=Vector3d(0,0,0))
     return result;
 }
 
+Vector3d Sphere::getSurPoint(const Vector3d& p){
+    auto pp=getPoint3DPolar(p,center);
+    pp.r=r;
+    return InvgetPoint3DPolar(pp,center);
+}
+
 //球面的点投影
 Point2D StereographicProjectionofPoint(const Sphere& s,const Point3D& p){
     Point2D result;
@@ -197,13 +203,15 @@ double LineandLine(Line2D l1,Line2D l2){
     return result;
 }
 
+
+//面之间的角度
 double angleBetweenPlane(Plane x,Plane y){
     double anglecos=x.dirc.normalized().dot(y.dirc.normalized());
     anglecos=max(double(-1),anglecos);
     anglecos=min(double(1),anglecos);
     return acos(anglecos);
 }
-
+//面之间的角度
 double angleBetweenPlane(Vector3d dir,Plane y){
     double anglecos=dir.normalized().dot(y.dirc.normalized());
     anglecos=max(double(-1),anglecos);
