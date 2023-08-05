@@ -37,14 +37,15 @@ class ACHoCC{
             for(int i=1;i<nums.size();i++){
                 numssum=min(numssum,nums[i]);
             }
-        }
-        else{
+            return numssum;
+        }else{
             double numssum=0;
             for(auto num:nums){
                 numssum+=exp(-b*num);
             }
             return -log(numssum)/b;
         }
+
     }
 
     static double distance(const Point3D& p,const Sphere& s,const double& r,const Vector3d& dir){
@@ -56,8 +57,6 @@ class ACHoCC{
         else{
             return (s.center-p).norm()-r;
         }
-        cout<<"出错了";
-        return -1;
     }
 
 
@@ -66,7 +65,7 @@ class ACHoCC{
         double b=0;
         double tmp=(a+b)/2;
         vector<double> nums;
-        while(abs(a-b)<0.02){
+        while(abs(a-b)>0.02){
             tmp=(a+b)/2;
             nums.clear();
             auto tmppoint=(1-tmp)*s.sphere.center+tmp*p;
@@ -158,7 +157,6 @@ class ACHoCC{
                 bool repeatposition1=APequal(angles[j],angles[getmod(j-1,angles.size())]);
                 bool repeatposition2=APequal(angles[(j+1)%angles.size()],angles[(j+2)%angles.size()]);
                 if(repeatposition1){
-                    cout<<x[i][getmod(j-1,angles.size())]<<" "<<u1<<endl;
                     getmid[edgeNum(u0,u2)]=pnum-1;
                 }
                 if(repeatposition2){
@@ -257,7 +255,7 @@ class ACHoCC{
         }
     }
 
-    static void WritePoint(Struct3d& s,print3d& result,set<int, greater<int>> need_adjust){
+    static void WritePoint(Struct3d& s,print3d& result,set<int,greater<int>>& need_adjust){
         map<edgeNum,vector<int>> ms;//标记椭圆锥上的四个特征点
         ShowEdge(ms,s);
         map<edgeNum,int> getmid;//标记边的中点
@@ -281,7 +279,12 @@ class ACHoCC{
         //连接椭圆锥
         ShowConeedge(s,result,facenum,getmid,ms);
 
-
+        for(auto i:getmid){
+            need_adjust.insert(i.second);
+        }
+        for(auto i:facenum){
+            need_adjust.insert(i.second);
+        }
     }
 
 
@@ -289,10 +292,12 @@ class ACHoCC{
         
         for(auto i:need_adjust){
             //投影到圆心
-            
+            auto tmpp=result.p[i];
+            tmpp=s.sphere.getSurPoint(tmpp);
             //投影到面上面
+            movetolattice(s,tmpp);
+            result.p[i]=tmpp;
         }
-        
     }
 public:
     static void ShowACHoCC(Struct3d& s,print3d& result){

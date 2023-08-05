@@ -68,8 +68,20 @@ Point3DPolar getPoint3DPolar(const Point3D& p,const Point3D& center=Vector3d(0,0
     Vector3d temp=p-center;
     result.r=temp.norm();
     double r_temp=sqrt(temp.x()*temp.x()+temp.y()*temp.y());
-    result.theta=acos(temp.z()/r_temp);
-    result.phi=atan2(temp.y(),temp.x());
+    if(r_temp<pre3){
+        result.theta=1;
+        if(temp.z()>0){
+            result.theta=0;
+        }
+        else{
+            result.theta=M_PI;
+        }
+    }
+    else{
+        result.theta=acos(temp.z()/result.r);
+        result.phi=atan2(temp.y(),temp.x());
+    }
+
     return result;
 }
 

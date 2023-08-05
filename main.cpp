@@ -41,7 +41,7 @@ int main()
 
 
     CHoCCInterface("./data/testshape2.txt","./result/CHoCCInterface");
-    CNTInterface("./data/testshape2.txt","./result/ACHoCCInterface");
+    CNTInterface("./data/testshape2.txt","./result/CNTInterface");
     ACHoCCInterface("./data/testshape2.txt","./result/ACHoCCInterface");
 
     // CNTMesh();

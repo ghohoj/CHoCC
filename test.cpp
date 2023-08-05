@@ -184,6 +184,12 @@ void test14(){
     printobj(result,"./data/testshape9");
 }
 
+void test15(){
+    auto s=Sphere(10);
+    auto tmp=s.getSurPoint(Vector3d(1,1,1));
+    cout<<tmp;
+}
+
 int main(){
     test14();
 }
