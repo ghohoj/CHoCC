@@ -11,6 +11,7 @@ using namespace std;
 struct Struct3d
 {
     Struct3d(Interface g);
+    void fresh(Interface g);
     //标记三角形点
     vector<Point3D> ps;
     //表面圆形

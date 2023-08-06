@@ -40,9 +40,9 @@ int main()
     //要运行哪个函数请将下面的函数注释去掉
 
 
-    CHoCCInterface("./data/testshape2.txt","./result/CHoCCInterface");
-    CNTInterface("./data/testshape2.txt","./result/CNTInterface");
-    ACHoCCInterface("./data/testshape2.txt","./result/ACHoCCInterface");
+    CHoCCInterface("./data/testshape1.txt","./result/CHoCCInterface");
+    CNTInterface("./data/testshape1.txt","./result/CNTInterface");
+    ACHoCCInterface("./data/testshape1.txt","./result/ACHoCCInterface");
 
     // CNTMesh();
     // CHoCCMesh();

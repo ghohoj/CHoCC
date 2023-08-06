@@ -3,7 +3,7 @@
 #include"display/ReadandWrite.h"
 #include"display/Struct3d.h"
 #include"generate/PlaneRollingBoundary.h"
-
+#include"mesh/getmesh.h"
 //测试相切圆（三个不相交）（1）
 void test1(){
     vector<Circ2D> ThreeCirc2D;
@@ -109,15 +109,13 @@ void test5(){
 
 //测试Plane-rolling
 void test8(){
-    auto q=readTxt("./data/testshape2.txt");
+    auto q=readTxt("./data/testshape4.txt");
     cout<<q;
-    Struct3d x(q);
-    cout<<x;
-
-    q=readTxt("./data/testshape1.txt");
-    cout<<q;
-    Struct3d y(q);
-    cout<<y;
+    Struct3d z(q);
+    cout<<z;
+    print3d result;
+    CHoCC::ShowCHoCC(z,result);
+    printobj(result,"./test/testshape7");
 }
 
 //apollonius的测试
@@ -190,6 +188,31 @@ void test15(){
     cout<<tmp;
 }
 
+
+//块的平移
+void test16(){
+    auto q=readTxt("./data/testshape4.txt");
+    cout<<q;
+    q.position=Vector3d(100,100,100);
+    Struct3d z(q);
+    cout<<z;
+    print3d result;
+    CHoCC::ShowCHoCC(z,result);
+    printobj(result,"./test/testshape7");
+}
+
+
+//测试网格
+void test17(){
+    Mesh tmp;
+    print3d result;
+    tmp.getmesh();
+    tmp.getmeshresult(result);
+
+    printobj(result,"./test/testshape7");
+}
+
+
 int main(){
-    test14();
+    test17();
 }

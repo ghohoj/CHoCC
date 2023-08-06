@@ -181,15 +181,4 @@ struct print3d
     vector<Point3D> p;
     vector<Vector3i> f;
 };
-// struct coneedgepoint
-// {
-//     //点所在圆的编号（这里两个数字，顺序一致）
-//     int pnums[2];
-//     //点所在圆边上的编号
-//     int cnum;
-// };
-// struct geodisplay
-// {
-//     coneedgepoint p[2];
-// };
 

@@ -14,33 +14,76 @@ using namespace std;
 //这里是对附录A的复现，求解方程
 //|N|=1
 //3个cos(\alpha+\alpha_i)=N \cdot N_i
-pair<double,Vector3d> solveAppendA(const vector<double>& angle,const vector<Vector3d>& dirs){
+pair<double,Vector3d> solveAppendANoZero(const vector<double>& angle,const vector<Vector3d>& dirs,bool special=false){
     pair<double,Vector3d> result;
-    Vector3d A=(cos(angle[0])*(dirs[1].cross(dirs[2]))+
+    Vector3d A=cos(angle[0])*(dirs[1].cross(dirs[2]))+
     cos(angle[1])*(dirs[2].cross(dirs[0]))+
-    cos(angle[2])*(dirs[0].cross(dirs[1])))/dirs[0].dot(dirs[1].cross(dirs[2]));
-    Vector3d B=(sin(angle[0])*(dirs[1].cross(dirs[2]))+
+    cos(angle[2])*(dirs[0].cross(dirs[1]));
+    Vector3d B=sin(angle[0])*(dirs[1].cross(dirs[2]))+
     sin(angle[1])*(dirs[2].cross(dirs[0]))+
-    sin(angle[2])*(dirs[0].cross(dirs[1])))/dirs[0].dot(dirs[1].cross(dirs[2]));
-
+    sin(angle[2])*(dirs[0].cross(dirs[1]));
+    double VV=dirs[0].dot(dirs[1].cross(dirs[2]))*dirs[0].dot(dirs[1].cross(dirs[2]));
     double AA=A.dot(A);
     double BB=B.dot(B);
     double AB=A.dot(B);
-    double tanangle=(AB-sqrt(AB*AB-(AA-1)*(BB-1)))/(BB-1);//我们只关心那个小的圆锥，不关系外接的圆锥
+
+    double tanangle=(AB-sqrt(max(double(0),AB*AB-(AA-VV)*(BB-VV))))/(BB-VV);//我们只关心那个小的圆锥，不关系外接的圆锥
+    if(special){
+        tanangle=(AB+sqrt(max(double(0),AB*AB-(AA-VV)*(BB-VV))))/(BB-VV);
+    }
     result.first=atan(tanangle);
-    result.second=cos(result.first)*A-sin(result.first)*B;
+    result.second=(cos(result.first)*A-sin(result.first)*B)/(dirs[0].dot(dirs[1].cross(dirs[2])));
     return result;
 }
 
+
+
+pair<double,Vector3d> solveAppendAZero(const vector<double>& angle,const vector<Vector3d>& dirs,bool special=false){
+    pair<double,Vector3d> result;
+    Vector3d A=cos(angle[0])*(dirs[1].cross(dirs[2]))+
+    cos(angle[1])*(dirs[2].cross(dirs[0]))+
+    cos(angle[2])*(dirs[0].cross(dirs[1]));
+    Vector3d B=sin(angle[0])*(dirs[1].cross(dirs[2]))+
+    sin(angle[1])*(dirs[2].cross(dirs[0]))+
+    sin(angle[2])*(dirs[0].cross(dirs[1]));
+    double VV=dirs[0].dot(dirs[1].cross(dirs[2]))*dirs[0].dot(dirs[1].cross(dirs[2]));
+    double AA=A.dot(A);
+    double BB=B.dot(B);
+    double AB=A.dot(B);
+
+    double tanangle=(AB-sqrt(max(double(0),AB*AB-(AA-VV)*(BB-VV))))/(BB-VV);//我们只关心那个小的圆锥，不关系外接的圆锥
+    if(special){
+        tanangle=(AB+sqrt(max(double(0),AB*AB-(AA-VV)*(BB-VV))))/(BB-VV);
+    }
+    result.first=atan(tanangle);
+    
+
+    if(!(APequal(dirs[0],dirs[1])||APequal(dirs[0],-dirs[1]))){
+        result.second=dirs[0].cross(dirs[1]).normalized();
+    }
+    else{
+        result.second=dirs[1].cross(dirs[2]).normalized();
+    }
+    return result;
+}
+
+
 // 3.4. Solving apollonius’s problem on a sphere的代码复现
-vector<Point3D> solveapollonius(const Sphere& s,const vector<double>& angle,const vector<Vector3d>& dirs){
+vector<Point3D> solveapollonius(const Sphere& s,const vector<double>& angle,const vector<Vector3d>& dirs,bool special=false){
     vector<Point3D> result;
     if(!(angle.size()==3&&dirs.size()==3)){
         cout<<"注意输入格式，三个角度三个方向";
         return result;
     }
+    pair<double,Vector3d> solution;
     Point3D tmp;
-    auto solution=solveAppendA(angle,dirs);
+    if(abs(dirs[0].dot(dirs[1].cross(dirs[2])))>pre3){
+        solution=solveAppendANoZero(angle,dirs,special);
+    }
+    else{
+        solution=solveAppendAZero(angle,dirs,special);
+    }
+    
     for(int i=0;i<3;i++){
         tmp=s.center+s.r*(sin(angle[i])*solution.second+sin(solution.first)*dirs[i])/sin(solution.first+angle[i]);
         result.push_back(tmp);
@@ -57,6 +100,21 @@ Struct3d::Struct3d(Interface g){
     sphere=Sphere(g.R,g.position);
     Planerolling();
 }
+void Struct3d::fresh(Interface g){
+    ps.clear();
+    circs.clear();
+    tris.clear();
+    circsnum.clear();
+    //重新初始化
+    circs.resize(g.dir.size());
+    //初始化圆
+    for(int i=0;i<g.dir.size();i++){
+        circs[i]=Circ(g.position+sqrt(g.R*g.R-g.r*g.r)*g.dir[i],g.dir[i],g.r);
+    }
+    sphere=Sphere(g.R,g.position);
+    Planerolling();
+}
+
 
 //3.3中的Plane-rolling算法
 void Struct3d::Planerolling(){
@@ -95,7 +153,9 @@ void Struct3d::Planerolling(){
             tmpangles.push_back(asin(circs[0].r/sphere.r));
             tmpangles.push_back(asin(circs[i].r/sphere.r));
             tmpangles.push_back(asin(circs[j].r/sphere.r));
-            
+            if(tmpdirs[0].dot(tmpdirs[1].cross(tmpdirs[2]))<pre2){
+                continue;
+            }
             tmpsolution=solveapollonius(sphere,tmpangles,tmpdirs);
             tmpplane=getPlanefromPoint(tmpsolution,circs[0].center);
             tmpangle=angleBetweenPlane(circs[0].dir,tmpplane);
@@ -114,7 +174,6 @@ void Struct3d::Planerolling(){
         swap(solution[1],solution[2]);
     }
     circsnum.push_back(tmpVector3i);
-    cout<<tmpVector3i.x()<<" "<<tmpVector3i.y()<<" "<<tmpVector3i.z()<<endl;
     int points_nums=0;//记录点的编号
     //初始化点
     ps.insert(ps.end(), solution.begin(), solution.end());
@@ -177,7 +236,6 @@ void Struct3d::Planerolling(){
         minangle=100;
         for(int i=0;i<circs.size();i++){
             if(i==edgekey.first||i==edgekey.second||
-            (repeattri.count(edgekey)&&repeattri[edgekey]==i)||
             (repeat.count(edgeNum(i,edgekey.first))&&repeat[edgeNum(i,edgekey.first)])||
             (repeat.count(edgeNum(i,edgekey.second))&&repeat[edgeNum(i,edgekey.second)])){
                 continue;
@@ -198,7 +256,15 @@ void Struct3d::Planerolling(){
                 plane=tmpplane;
             }
         }
-        cout<<tmpVector3i.x()<<" "<<tmpVector3i.y()<<" "<<tmpVector3i.z()<<endl;
+        //修正，有可能是外接圆锥
+        if(!IfPlanefromPointRight(plane,circs[tmpVector3i.x()].center)){
+            tmpdirs.clear();
+            tmpdirs.push_back(circs[tmpVector3i.x()].dir);
+            tmpdirs.push_back(circs[tmpVector3i.y()].dir);
+            tmpdirs.push_back(circs[tmpVector3i.z()].dir);
+            solution=solveapollonius(sphere,tmpangles,tmpdirs,true);
+            plane=getPlanefromPoint(tmpsolution);
+        }
 
 
         circsnum.push_back(tmpVector3i);
