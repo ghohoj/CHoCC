@@ -50,7 +50,7 @@ class CNT{
         }
     }
 
-    static void ShowCirFace(Struct3d& s,print3d& result)
+    static void ShowCirFace(Struct3d& s,print3d& result,map<double, vector<int>>& tmp)
     {
         int pnum=result.p.size();
         
@@ -78,6 +78,7 @@ class CNT{
             result.p.push_back(centerpoint);
             for(j=0;j<angles.size();j++){
                 result.f.push_back(Vector3i(i,x[i][j],x[i][(j+1)%angles.size()])+Vector3i(pnum,0,0));
+                tmp[Veckey(s.circs[i].dir)].push_back(x[i][j]);
             }
         }
     }
@@ -105,11 +106,12 @@ class CNT{
         }
     }
 public:
-    static void ShowCNT(Struct3d& s,print3d& result){
+    static map<double, vector<int>> ShowCNT(Struct3d& s,print3d& result){
+        map<double, vector<int>> tmp;
         //加入大三角形
         ShowTriDirt(s,result);
         //加入最简单的多边形的接口
-        ShowCirFace(s,result);
+        ShowCirFace(s,result,tmp);
         //加入边线
         map<edgeNum,vector<int>> ms;
         ShowEdge(ms,s);
@@ -117,6 +119,7 @@ public:
             result.f.push_back(Vector3i(m.second[3],m.second[0],m.second[2]));
             result.f.push_back(Vector3i(m.second[2],m.second[0],m.second[1]));
         }
+        return tmp;
     }
 
 };

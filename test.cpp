@@ -3,7 +3,8 @@
 #include"display/ReadandWrite.h"
 #include"display/Struct3d.h"
 #include"generate/PlaneRollingBoundary.h"
-#include"mesh/getmesh.h"
+#include"mesh/CHoCCMesh.h"
+#include"mesh/CNTMesh.h"
 //测试相切圆（三个不相交）（1）
 void test1(){
     vector<Circ2D> ThreeCirc2D;
@@ -191,20 +192,20 @@ void test15(){
 
 //块的平移
 void test16(){
-    auto q=readTxt("./data/testshape4.txt");
+    auto q=readTxt("./data/testshape3.txt");
     cout<<q;
-    q.position=Vector3d(100,100,100);
+    q.position=Vector3d(200,0,200);
     Struct3d z(q);
     cout<<z;
     print3d result;
     CHoCC::ShowCHoCC(z,result);
-    printobj(result,"./test/testshape7");
+    printobj(result,"./test/testshape3");
 }
 
 
-//测试网格
+//测试网格1
 void test17(){
-    Mesh tmp;
+    CHoCCMesh tmp;
     print3d result;
     tmp.getmesh();
     tmp.getmeshresult(result);
@@ -212,7 +213,16 @@ void test17(){
     printobj(result,"./test/testshape7");
 }
 
+//测试网格2
+void test18(){
+    CNTMesh tmp;
+    print3d result;
+    tmp.getmesh();
+    tmp.getmeshresult(result);
+    printobj(result,"./test/testshape7");
+}
+
 
 int main(){
-    test17();
+    test18();
 }

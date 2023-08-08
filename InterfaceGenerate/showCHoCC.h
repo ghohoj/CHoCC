@@ -32,16 +32,6 @@ class CHoCC{
         return result;
     }
 
-    static bool compare(int a1,int a2,int b1,int b2){
-        a1++;
-        b1++;
-        if(a1*b2<a2*b1){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
 
     //这里的采取的方法是，直接连接不同弧线之间的点，如果弧线a与弧线b的点数目不一样，那么我们取点少的那组，然后按照比例连接另外一组
     //例如弧线a有1，2，3，4，弧线b有4，5，我们连接a1b4,a2b4,a2b5,a3b5,a4b5,当ai/a.size()较小就下个点变换a，反之变换b5
@@ -131,10 +121,13 @@ class CHoCC{
     }
 public:
     //这段的目的是完整的展示一个接口的形状，并不适合作为每个接口的计算方程，那样复杂度太高
-    static void ShowCHoCC(Struct3d& s,print3d& result){
+    static map<double,vector<pair<int,int>>> ShowCHoCC(Struct3d& s,print3d& result){
         //加入圆柱的接口
+        map<double,vector<pair<int,int>>> connect_face;
         for(auto cir:s.circs){
+            int tmpsize=result.p.size();
             ShowCirc(cir,result);
+            connect_face[Veckey(cir.dir)].push_back(make_pair(tmpsize,result.p.size()-1));
         }
         //加入大三角形
         for(int i=0;i<s.circsnum.size();i++){
@@ -149,6 +142,7 @@ public:
             vector<int> ep2=getp(m.second[2],m.second[1]);
             getedgeofcone(ep1,ep2,result.f);
         }
+        return connect_face;
     }
 
 };

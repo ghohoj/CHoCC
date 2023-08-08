@@ -83,8 +83,6 @@ struct Circ
     Point3D center;
     Vector3d dir;
     double r;
-    vector<int> passpoint;//这个是用来标记需要经过的点
-    vector<int> passface;//这个是用来标记需要经过的面
     Vector3d vertica[2];
     void getvertica(){
         Matrix<double,1,3> equation(dir);
@@ -113,7 +111,7 @@ struct Circ
 };
 
 
-
+//作为map的索引
 struct edgeNum:pair<int,int>
 {
     //下面的定义是为了方便map做索引
@@ -134,7 +132,7 @@ struct edgeNum:pair<int,int>
     }
 };
 
-
+//作为
 struct FaceNum{
     vector<int> data;
     FaceNum(int a,int b,int c,int d){
@@ -176,9 +174,18 @@ struct FaceNum{
     }
 };
 
+//作为方向向量的索引
+int Veckey(Vector3d x){
+    return int((x.x()+4*x.y()+16*x.z())*3000);
+}
+
 struct print3d
 {
     vector<Point3D> p;
     vector<Vector3i> f;
 };
 
+
+const int MESHN=6;
+const double MESHR=10;
+const double LenBetweenCirc=100;

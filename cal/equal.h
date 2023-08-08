@@ -36,3 +36,14 @@ int getmod(int a,int b){
         return result;
     }
 }
+
+bool compare(int a1,int a2,int b1,int b2){
+    a1++;
+    b1++;
+    if(a1*b2<a2*b1){
+        return true;
+    }
+    else{
+        return false;
+    }
+}

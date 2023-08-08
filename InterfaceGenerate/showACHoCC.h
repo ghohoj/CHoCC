@@ -59,7 +59,6 @@ class ACHoCC{
         }
     }
 
-
     static void movetolattice(const Struct3d& s,Point3D& p){
         double a=1;
         double b=0;
@@ -83,7 +82,6 @@ class ACHoCC{
         tmp=(a+b)/2;
         p=(1-tmp)*s.sphere.center+tmp*p;
     }
-
 
     static void ShowEdge(map<edgeNum,vector<int>>& ms,Struct3d& s){
         for(int i=0;i<s.circsnum.size();i++){

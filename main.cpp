@@ -3,7 +3,9 @@
 #include"Delaunay/Delauat.h"
 #include"display/ReadandWrite.h"
 #include"display/Struct3d.h"
+#include"mesh/CHoCCMesh.h"
 #include"generate/PlaneRollingBoundary.h"
+#include"mesh/CNTMesh.h"
 using namespace std;
 
 //下面两个函数运行可以得到
@@ -35,6 +37,22 @@ void CNTInterface(string dir_address,string result_address){
     printobj(result,result_address);
 }
 
+void getCHoCCMesh(string result_address){
+    CHoCCMesh tmp;
+    print3d result;
+    tmp.getmesh();
+    tmp.getmeshresult(result);
+    printobj(result,result_address);
+}
+
+void getCNTMesh(string result_address){
+    CNTMesh tmp;
+    print3d result;
+    tmp.getmesh();
+    tmp.getmeshresult(result);
+    printobj(result,result_address);
+}
+
 int main()
 {
     //要运行哪个函数请将下面的函数注释去掉
@@ -43,7 +61,8 @@ int main()
     CHoCCInterface("./data/testshape1.txt","./result/CHoCCInterface");
     CNTInterface("./data/testshape1.txt","./result/CNTInterface");
     ACHoCCInterface("./data/testshape1.txt","./result/ACHoCCInterface");
-
+    getCHoCCMesh("./result/CHoCCMesh");
+    getCNTMesh("./result/CNTMesh");
     // CNTMesh();
     // CHoCCMesh();
 }

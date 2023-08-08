@@ -64,6 +64,9 @@ pair<double,Vector3d> solveAppendAZero(const vector<double>& angle,const vector<
     else{
         result.second=dirs[1].cross(dirs[2]).normalized();
     }
+    if(special){
+        result.second=-result.second;
+    }
     return result;
 }
 
@@ -153,9 +156,7 @@ void Struct3d::Planerolling(){
             tmpangles.push_back(asin(circs[0].r/sphere.r));
             tmpangles.push_back(asin(circs[i].r/sphere.r));
             tmpangles.push_back(asin(circs[j].r/sphere.r));
-            if(tmpdirs[0].dot(tmpdirs[1].cross(tmpdirs[2]))<pre2){
-                continue;
-            }
+
             tmpsolution=solveapollonius(sphere,tmpangles,tmpdirs);
             tmpplane=getPlanefromPoint(tmpsolution,circs[0].center);
             tmpangle=angleBetweenPlane(circs[0].dir,tmpplane);
@@ -179,10 +180,7 @@ void Struct3d::Planerolling(){
     ps.insert(ps.end(), solution.begin(), solution.end());
     //初始化三角形
     tris.push_back(Vector3i(points_nums,points_nums+1,points_nums+2));
-    //初始化圆圈需要经过的点编号
-    circs[tmpVector3i.x()].passpoint.push_back(points_nums);
-    circs[tmpVector3i.y()].passpoint.push_back(points_nums+1);
-    circs[tmpVector3i.z()].passpoint.push_back(points_nums+2);
+
     
     //第一个是指代圆的编号，第二个指代点的编号
     map<edgeNum,edgeNum> connect;
@@ -294,9 +292,6 @@ void Struct3d::Planerolling(){
         //初始化三角形
         tris.push_back(Vector3i(points_nums,points_nums+1,points_nums+2));
         //初始化圆圈需要经过的点编号
-        circs[tmpVector3i.x()].passpoint.push_back(points_nums);
-        circs[tmpVector3i.y()].passpoint.push_back(points_nums+1);
-        circs[tmpVector3i.z()].passpoint.push_back(points_nums+2);
         points_nums+=3;
     }
 }
