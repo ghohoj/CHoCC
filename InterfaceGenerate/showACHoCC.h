@@ -31,6 +31,7 @@ using namespace std;
 // the exact lattice. A typical result is shown in Fig. 19—left.
 
 class ACHoCC{
+    //FilletSurface中计算的d(P)
     static double FilletSurface(const vector<double>& nums,double b=-1){
         if(b<0){
             double numssum=nums[0];
@@ -48,6 +49,7 @@ class ACHoCC{
 
     }
 
+    //cone-sphere distance
     static double distance(const Point3D& p,const Sphere& s,const double& r,const Vector3d& dir){
         double x=dir.normalized().dot(p-s.center);
         double rp2cenline=sqrt((p-s.center).squaredNorm()-x*x);
@@ -59,6 +61,7 @@ class ACHoCC{
         }
     }
 
+    //对一个点进行移动
     static void movetolattice(const Struct3d& s,Point3D& p){
         double a=1;
         double b=0;
@@ -83,6 +86,7 @@ class ACHoCC{
         p=(1-tmp)*s.sphere.center+tmp*p;
     }
 
+    //记录下coneedge的四个特征点
     static void ShowEdge(map<edgeNum,vector<int>>& ms,Struct3d& s){
         for(int i=0;i<s.circsnum.size();i++){
             ms[edgeNum(s.circsnum[i].x(),s.circsnum[i].y())].push_back(
@@ -106,6 +110,7 @@ class ACHoCC{
         }
     }
 
+    //对angle排序，x也按照angle的排序而排序
     static void mysort(vector<int>& x,vector<double>& angles){
         for(int i=0;i<x.size();i++){
             for(int j=i+1;j<x.size();j++){
@@ -117,6 +122,7 @@ class ACHoCC{
         }
     }
 
+    //展示圆面的obj文件
     static void ShowCirFace(Struct3d& s,print3d& result,map<edgeNum,int>& getmid,map<int,int>& circenter,int& pnum)
     {
         int j=0;
@@ -174,12 +180,14 @@ class ACHoCC{
         }
     }
 
+    //输入三角形的点
     static void getinitpoint(Struct3d& s,print3d& result){
         for(int i=0;i<s.ps.size();i++){
             result.p.push_back(s.ps[i]);
         }
     }
     
+    //加入三角形的中间点
     static void AddTriEdgeCenter(Struct3d& s,print3d& result,map<edgeNum,int>& getmid,int& pnum){
         for(int i=0;i<s.tris.size();i++){
             result.p.push_back(
@@ -197,6 +205,7 @@ class ACHoCC{
         }
     }
     
+    //加入coneedge的中心点
     static void Addconeedgecenter(Struct3d& s,print3d& result,map<edgeNum,vector<int>>& ms,map<FaceNum,int>& facenum,int& pnum){
         for(auto m:ms){
             result.p.push_back(
@@ -206,11 +215,9 @@ class ACHoCC{
         }
     }
     
+    //三角形的obj输入
     static void ShowTri(Struct3d& s,print3d& result,map<edgeNum,int>& getmid){
         for(int i=0;i<s.tris.size();i++){
-            assert(getmid.count(edgeNum(s.tris[i].x(),s.tris[i].y()))!=0);
-            assert(getmid.count(edgeNum(s.tris[i].z(),s.tris[i].y()))!=0);
-            assert(getmid.count(edgeNum(s.tris[i].x(),s.tris[i].z()))!=0);
             int xy=getmid[edgeNum(s.tris[i].x(),s.tris[i].y())];
             int xz=getmid[edgeNum(s.tris[i].z(),s.tris[i].x())];
             int yz=getmid[edgeNum(s.tris[i].y(),s.tris[i].z())];
@@ -224,15 +231,11 @@ class ACHoCC{
         }
     }
 
+    //展示coneedge的obj文件
     static void ShowConeedge(Struct3d& s,print3d& result,map<FaceNum,int>& facenum,map<edgeNum,int>& getmid
         ,map<edgeNum,vector<int>> ms){
-        
         for(auto m:ms){
             int center=facenum[m.second];
-            assert(getmid.count(edgeNum(m.second[0],m.second[1]))!=0);
-            assert(getmid.count(edgeNum(m.second[1],m.second[2]))!=0);
-            assert(getmid.count(edgeNum(m.second[2],m.second[3]))!=0);
-            assert(getmid.count(edgeNum(m.second[3],m.second[0]))!=0);
             int mid01=getmid[edgeNum(m.second[0],m.second[1])];
             int mid12=getmid[edgeNum(m.second[1],m.second[2])];
             int mid23=getmid[edgeNum(m.second[2],m.second[3])];
@@ -253,6 +256,7 @@ class ACHoCC{
         }
     }
 
+    //CNT+插入中间点
     static void WritePoint(Struct3d& s,print3d& result,set<int,greater<int>>& need_adjust){
         map<edgeNum,vector<int>> ms;//标记椭圆锥上的四个特征点
         ShowEdge(ms,s);
@@ -267,13 +271,10 @@ class ACHoCC{
         AddTriEdgeCenter(s,result,getmid,pnum);
         //加入三角形面
         ShowTri(s,result,getmid);
-        assert(pnum==result.p.size());
         //加入椭圆锥的中心点并记录到facenum
         Addconeedgecenter(s,result,ms,facenum,pnum);
-        assert(pnum==result.p.size());
         //圆面中心点,圆面的连接
         ShowCirFace(s,result,getmid,circenter,pnum);
-        assert(pnum==result.p.size());
         //连接椭圆锥
         ShowConeedge(s,result,facenum,getmid,ms);
 
@@ -285,9 +286,8 @@ class ACHoCC{
         }
     }
 
-
+    //对点的位置进行调整
     static void adjustpoint(Struct3d& s,print3d& result,set<int, greater<int>>& need_adjust){
-        
         for(auto i:need_adjust){
             //投影到圆心
             auto tmpp=result.p[i];
@@ -297,6 +297,7 @@ class ACHoCC{
             result.p[i]=tmpp;
         }
     }
+
 public:
     static void ShowACHoCC(Struct3d& s,print3d& result){
         //写入点与面

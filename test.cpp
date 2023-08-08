@@ -183,6 +183,8 @@ void test14(){
     printobj(result,"./data/testshape9");
 }
 
+
+//测试getSurPoin
 void test15(){
     auto s=Sphere(10);
     auto tmp=s.getSurPoint(Vector3d(1,1,1));
@@ -222,6 +224,16 @@ void test18(){
     printobj(result,"./test/testshape7");
 }
 
+//测试ACHoCC
+void test19(){
+    auto q=readTxt("./data/testshape1.txt");
+    cout<<q;
+    Struct3d x(q);
+    cout<<x;
+    print3d result;
+    ACHoCC::ShowACHoCC(x,result);
+    printobj(result,"./data/testshape9");
+}
 
 int main(){
     test18();

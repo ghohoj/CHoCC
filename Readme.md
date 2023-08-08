@@ -14,7 +14,23 @@
 
 ## 步骤1
 
+### Projection-based boundary evaluation
+
+### Plane-rolling boundary evaluation
+
 ## 步骤2
+
+CHoCC接口
+
+
+
+CNTInterface接口
+
+
+
+ACHoCCInterface接口
+
+
 
 ## 步骤3
 
@@ -22,7 +38,7 @@
 1. 运行CHoCCInterface，你可以得到文件./result/CHoCCInterface.obj，展示论文fig.3(c)。
 2. 运行CNTInterface，你可以得到文件./result/CHoCCInterface.obj，展示论文fig.15(c)。
 3. 运行ACHoCCInterface,你可以得到./result/ACHoCCInterface.obj，展示论文fig.19。在这个方法中你可以调节参数b（b的作用见论文fillet-surface，主要用于调节连接曲面的平滑程度）与是否加入补充点（an additional circle of infinitesimal radius）。
-4. 你可以修改配置文件地址参数dir_address或自己编写textshape.txt，展示不同的方向的接口。编写规则详见./data/Readme.md。本仓库已经提供了3接口，6接口，8接口的范例。
+4. 你可以修改配置文件地址参数dir_address或自己编写textshape.txt，展示不同的方向的接口。编写规则详见./data/Readme.md。本仓库已经提供了3接口，4接口，6接口，8接口等的范例。
 5. 运行CHoCCMesh，你可以得到xxx，展示论文fig.2。
 6. 运行CNTMesh，你可以得到xxx，展示论文fig.13。
 
@@ -39,6 +55,8 @@ CHoCCMesh网格
 ![image-20230807195555500](./assets/image-20230807195555500.png)
 
 CNTMesh网格
+
+![image-20230808113157445](./assets/image-20230808113157445.png)
 
 
 
@@ -60,10 +78,6 @@ CNTMesh网格
 
 [^1]: Wu Y, Gupta A, Kurzeja K, et al. Chocc: convex hull of cospherical circles and applications to lattices[J]. Computer-Aided Design, 2020, 129: 102903.
 [^2]: Wu Y, Gupta A, Kurzeja K, et al. Chocc: convex hull of cospherical circles and applications to lattices[J]. Computer-Aided Design, 2020, 129: 102903.
-
-# 疑难点
-
-1. 几何处理中会遇到大量的极限点问题导致程序出错。例如出现$0/0$的情况，需要反复检查发现各种特殊情况。
 
 
 

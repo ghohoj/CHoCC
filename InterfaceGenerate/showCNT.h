@@ -38,7 +38,7 @@ class CNT{
         
     }
 
-
+    //对angle排序，x也按照angle的排序而排序
     static void mysort(vector<int>& x,vector<double>& angles){
         for(int i=0;i<x.size();i++){
             for(int j=i+1;j<x.size();j++){
