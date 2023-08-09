@@ -1,3 +1,6 @@
+// 这个文件用于调试代码
+
+
 #include"generate/Apollonius.h"
 #include"Delaunay/Delauat.h"
 #include"display/ReadandWrite.h"
@@ -44,22 +47,22 @@ void test3(){
     cout<<x[1];
 }
 //测试第一个方法划分的三角形效果
-void test4(){
-    vector<Point2D> list_tmp;
-    Point2D tmp;
-    tmp<<0,0;
-    list_tmp.push_back(tmp);
-    tmp<<sqrt(3)/2,0;
-    list_tmp.push_back(tmp);
-    tmp<<-sqrt(3)/2,0;
-    list_tmp.push_back(tmp);
-    tmp<<0,1.0/2;
-    list_tmp.push_back(tmp);
-    tmp<<0,-1.0/2;
-    list_tmp.push_back(tmp);
-    auto x=Delaunay(list_tmp);
-    cout<<x;
-}
+// void test4(){
+//     vector<Point2D> list_tmp;
+//     Point2D tmp;
+//     tmp<<0,0;
+//     list_tmp.push_back(tmp);
+//     tmp<<sqrt(3)/2,0;
+//     list_tmp.push_back(tmp);
+//     tmp<<-sqrt(3)/2,0;
+//     list_tmp.push_back(tmp);
+//     tmp<<0,1.0/2;
+//     list_tmp.push_back(tmp);
+//     tmp<<0,-1.0/2;
+//     list_tmp.push_back(tmp);
+//     auto x=Delaunay(list_tmp);
+//     cout<<x;
+// }
 //测试写入写出
 void test5(){
     auto q=readTxt("./data/testshape1.txt");
@@ -231,10 +234,10 @@ void test19(){
     Struct3d x(q);
     cout<<x;
     print3d result;
-    ACHoCC::ShowACHoCC(x,result);
+    ACHoCC::ShowACHoCC(x,result,0.5);
     printobj(result,"./data/testshape9");
 }
 
 int main(){
-    test18();
+    test19();
 }

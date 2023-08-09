@@ -242,7 +242,11 @@ void Struct3d::Planerolling(){
             tmpdirs.push_back(circs[i].dir);
             tmpdirs.push_back(circs[edgeint.second].dir);
             tmpdirs.push_back(circs[edgeint.first].dir);
-            
+            tmpangles.clear();
+            tmpangles.push_back(asin(circs[i].r/sphere.r));
+            tmpangles.push_back(asin(circs[edgeint.second].r/sphere.r));
+            tmpangles.push_back(asin(circs[edgeint.first].r/sphere.r));
+
             tmpsolution=solveapollonius(sphere,tmpangles,tmpdirs);
             tmpplane=getPlanefromPoint(tmpsolution);
             tmpangle=angleBetweenPlane(dirt,tmpplane);

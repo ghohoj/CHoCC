@@ -23,16 +23,16 @@ Plane getPlanefromPoint(const vector<Point3D>& ps,const Point3D& o){
     return tmp;
 }
 
-bool IfPlanefromPointRight(Plane tmp,const Point3D& o){
-    if((tmp.point-o).dot(tmp.dirc)<0){
+bool IfPlanefromPointRight(Plane tmp,const Point3D& o,double const pre=0){
+    if((tmp.point-o).dot(tmp.dirc)<0+pre){
         return false;
     }
     return true;//不需要交换点
 }
 
-bool IfPlanefromPointRight(const vector<Point3D>& ps,const Point3D& o){
+bool IfPlanefromPointRight(const vector<Point3D>& ps,const Point3D& o,double const pre=0){
     Plane tmp=getPlanefromPoint(ps[0],ps[1],ps[2]);
-    return IfPlanefromPointRight(tmp,o);
+    return IfPlanefromPointRight(tmp,o,pre);
 }
 
 //平面截取圆上点，一般有两个点

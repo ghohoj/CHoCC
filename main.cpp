@@ -1,3 +1,5 @@
+// 这个文件用于展示结果
+
 #include<iostream>
 #include"generate/Apollonius.h"
 #include"Delaunay/Delauat.h"
@@ -57,12 +59,9 @@ int main()
 {
     //要运行哪个函数请将下面的函数注释去掉
 
-
-    CHoCCInterface("./data/testshape1.txt","./result/CHoCCInterface");
-    CNTInterface("./data/testshape1.txt","./result/CNTInterface");
-    ACHoCCInterface("./data/testshape1.txt","./result/ACHoCCInterface");
-    getCHoCCMesh("./result/CHoCCMesh");
-    getCNTMesh("./result/CNTMesh");
-    // CNTMesh();
-    // CHoCCMesh();
+    // CHoCCInterface("./data/testshape3.txt","./result/CHoCCInterface");
+    // CNTInterface("./data/testshape3.txt","./result/CNTInterface");
+    // ACHoCCInterface("./data/testshape3.txt","./result/ACHoCCInterface");
+    // getCHoCCMesh("./result/CHoCCMesh");
+    // getCNTMesh("./result/CNTMesh");
 }

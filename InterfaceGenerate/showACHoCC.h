@@ -62,19 +62,23 @@ class ACHoCC{
     }
 
     //对一个点进行移动
-    static void movetolattice(const Struct3d& s,Point3D& p){
+    static void movetolattice(const Struct3d& s,Point3D& p,bool IfAddPoint=false,double binpaper=-1){
         double a=1;
         double b=0;
         double tmp=(a+b)/2;
         vector<double> nums;
+        int cirsize=s.circs.size();
+        if(IfAddPoint){
+            cirsize--;
+        }
         while(abs(a-b)>0.02){
             tmp=(a+b)/2;
             nums.clear();
             auto tmppoint=(1-tmp)*s.sphere.center+tmp*p;
-            for(int i=0;i<s.circs.size();i++){
+            for(int i=0;i<cirsize;i++){
                 nums.push_back(distance(tmppoint,s.sphere,s.circs[i].r,s.circs[i].dir));
             }
-            double distmp=FilletSurface(nums);
+            double distmp=FilletSurface(nums,binpaper);
             if(distmp>0){
                 a=tmp;
             }
@@ -123,15 +127,15 @@ class ACHoCC{
     }
 
     //展示圆面的obj文件
-    static void ShowCirFace(Struct3d& s,print3d& result,map<edgeNum,int>& getmid,map<int,int>& circenter,int& pnum)
+    static void ShowCirFace(Struct3d& s,print3d& result,map<edgeNum,int>& getmid,map<int,int>& circenter,int& pnum,
+    set<int,greater<int>>& need_adjust,bool IfAddPoint=false)
     {
-        int j=0;
         //将这些点归类到各个圆形上面
         vector<vector<int>> x(s.circs.size());
         for(int i=0;i<s.circsnum.size();i++){
-            x[s.circsnum[i].x()].push_back(j++);
-            x[s.circsnum[i].y()].push_back(j++);
-            x[s.circsnum[i].z()].push_back(j++);
+            x[s.circsnum[i].x()].push_back(s.tris[i].x());
+            x[s.circsnum[i].y()].push_back(s.tris[i].y());
+            x[s.circsnum[i].z()].push_back(s.tris[i].z());
         }
         //生成多边形
         vector<double> angles;
@@ -147,9 +151,12 @@ class ACHoCC{
             mysort(x[i],angles);
             //加入多边形的中心点
             result.p.push_back(centerpoint);
+            if(i==s.circs.size()-1&&IfAddPoint){
+                need_adjust.insert(pnum);
+            }
             circenter[i]=pnum++;
-
-            for(j=0;j<angles.size();j++){
+            
+            for(int j=0;j<angles.size();j++){
                 int u0=x[i][getmod(j-1,angles.size())];
                 int u1=x[i][j];
                 int u2=x[i][(j+1)%angles.size()];
@@ -181,9 +188,14 @@ class ACHoCC{
     }
 
     //输入三角形的点
-    static void getinitpoint(Struct3d& s,print3d& result){
+    static void getinitpoint(Struct3d& s,print3d& result,set<int,greater<int>>& need_adjust,bool IfAddPoint=false){
         for(int i=0;i<s.ps.size();i++){
             result.p.push_back(s.ps[i]);
+        }
+        if(IfAddPoint){
+            need_adjust.insert(s.ps.size()-3);
+            need_adjust.insert(s.ps.size()-2);
+            need_adjust.insert(s.ps.size()-1);
         }
     }
     
@@ -218,6 +230,9 @@ class ACHoCC{
     //三角形的obj输入
     static void ShowTri(Struct3d& s,print3d& result,map<edgeNum,int>& getmid){
         for(int i=0;i<s.tris.size();i++){
+            assert(getmid.count(edgeNum(s.tris[i].x(),s.tris[i].y()))!=0);
+            assert(getmid.count(edgeNum(s.tris[i].z(),s.tris[i].x()))!=0);
+            assert(getmid.count(edgeNum(s.tris[i].y(),s.tris[i].z()))!=0);
             int xy=getmid[edgeNum(s.tris[i].x(),s.tris[i].y())];
             int xz=getmid[edgeNum(s.tris[i].z(),s.tris[i].x())];
             int yz=getmid[edgeNum(s.tris[i].y(),s.tris[i].z())];
@@ -241,6 +256,11 @@ class ACHoCC{
             int mid23=getmid[edgeNum(m.second[2],m.second[3])];
             int mid30=getmid[edgeNum(m.second[3],m.second[0])];
 
+            assert(getmid.count(edgeNum(m.second[0],m.second[1]))!=0);
+            assert(getmid.count(edgeNum(m.second[1],m.second[2]))!=0);
+            assert(getmid.count(edgeNum(m.second[2],m.second[3]))!=0);
+            assert(getmid.count(edgeNum(m.second[3],m.second[0]))!=0);
+
             result.f.push_back(Vector3i(m.second[0],mid01,center));
             result.f.push_back(Vector3i(center,mid01,m.second[1]));
 
@@ -257,7 +277,7 @@ class ACHoCC{
     }
 
     //CNT+插入中间点
-    static void WritePoint(Struct3d& s,print3d& result,set<int,greater<int>>& need_adjust){
+    static void WritePoint(Struct3d& s,print3d& result,set<int,greater<int>>& need_adjust,bool IfAddPoint=false){
         map<edgeNum,vector<int>> ms;//标记椭圆锥上的四个特征点
         ShowEdge(ms,s);
         map<edgeNum,int> getmid;//标记边的中点
@@ -265,17 +285,17 @@ class ACHoCC{
         map<FaceNum,int> facenum;//圆形中点
 
         //加入CNT中已经有的点
-        getinitpoint(s,result);
+        getinitpoint(s,result,need_adjust,IfAddPoint);
         int pnum=result.p.size();
         //加入三角形中点
         AddTriEdgeCenter(s,result,getmid,pnum);
         //加入三角形面
         ShowTri(s,result,getmid);
-        //加入椭圆锥的中心点并记录到facenum
+        // //加入椭圆锥的中心点并记录到facenum
         Addconeedgecenter(s,result,ms,facenum,pnum);
-        //圆面中心点,圆面的连接
-        ShowCirFace(s,result,getmid,circenter,pnum);
-        //连接椭圆锥
+        // //圆面中心点,圆面的连接
+        ShowCirFace(s,result,getmid,circenter,pnum,need_adjust,IfAddPoint);
+        // //连接椭圆锥
         ShowConeedge(s,result,facenum,getmid,ms);
 
         for(auto i:getmid){
@@ -287,23 +307,85 @@ class ACHoCC{
     }
 
     //对点的位置进行调整
-    static void adjustpoint(Struct3d& s,print3d& result,set<int, greater<int>>& need_adjust){
+    static void adjustpoint(Struct3d& s,print3d& result,set<int, greater<int>>& need_adjust,bool IfAddPoint=false,double binpaper=-1){
         for(auto i:need_adjust){
             //投影到圆心
             auto tmpp=result.p[i];
             tmpp=s.sphere.getSurPoint(tmpp);
             //投影到面上面
-            movetolattice(s,tmpp);
+            movetolattice(s,tmpp,IfAddPoint,binpaper);
             result.p[i]=tmpp;
         }
     }
+    
+    static int IfAddPoint(Struct3d& s){
+        vector<Point3D> p;
+        int i;
+        for(i=0;i<s.tris.size();i++){
+            p.clear();
+            p.push_back(s.ps[s.tris[i].x()]);
+            p.push_back(s.ps[s.tris[i].y()]);
+            p.push_back(s.ps[s.tris[i].z()]);
+            if(!IfPlanefromPointRight(p,s.sphere.center)){
+                break;
+            }
+        }
+        if(i!=s.tris.size()){
+            return i;
+        }
+        return -1;
+    }
+    static void pre_deal(Struct3d& s,int num){
+        //计算圆形与中心
+        Vector3d tmpp;
+        tmpp<<(s.ps[s.tris[num].x()]+s.ps[s.tris[num].y()]+s.ps[s.tris[num].z()])/3;
+        tmpp=s.sphere.center-(tmpp-s.sphere.center);
+        tmpp=s.sphere.getSurPoint(tmpp);
+        Circ c(s.sphere.center+s.sphere.r*(tmpp-s.sphere.center).normalized(),(tmpp-s.sphere.center).normalized(),0.00001);
+        s.circs.push_back(c);
+        s.ps.push_back(
+            c.center+((s.ps[s.tris[num].y()]-c.center)+(s.ps[s.tris[num].z()]-c.center)).normalized()*c.r
+            );
+        s.ps.push_back(
+            c.center+((s.ps[s.tris[num].x()]-c.center)+(s.ps[s.tris[num].z()]-c.center)).normalized()*c.r
+        );
+        s.ps.push_back(
+            c.center+((s.ps[s.tris[num].x()]-c.center)+(s.ps[s.tris[num].y()]-c.center)).normalized()*c.r
+        );
+        //加入三角形
+        Vector3i tmp;
+        tmp<<s.ps.size()-3,s.tris[num].y(),s.tris[num].z();
+        s.tris.push_back(tmp);
+        tmp<<s.tris[num].x(),s.ps.size()-2,s.tris[num].z();
+        s.tris.push_back(tmp);
+        tmp<<s.tris[num].x(),s.tris[num].y(),s.ps.size()-1;
+        s.tris.push_back(tmp);
+        s.tris.erase(s.tris.begin()+num);
+        //加入圆形坐标
+        tmp<<s.circs.size()-1,s.circsnum[num].y(),s.circsnum[num].z();
+        s.circsnum.push_back(tmp);
+        tmp<<s.circsnum[num].x(),s.circs.size()-1,s.circsnum[num].z();
+        s.circsnum.push_back(tmp);
+        tmp<<s.circsnum[num].x(),s.circsnum[num].y(),s.circs.size()-1;
+        s.circsnum.push_back(tmp);
+        s.circsnum.erase(s.circsnum.begin()+num);
+    }
 
 public:
-    static void ShowACHoCC(Struct3d& s,print3d& result){
+    static void ShowACHoCC(Struct3d& s,print3d& result,double binpaper=-1){
         //写入点与面
+        int choice=IfAddPoint(s);
         set<int, greater<int>> need_adjust;
-        WritePoint(s,result,need_adjust);
-        //调整点的位置
-        adjustpoint(s,result,need_adjust);
+        if(choice==-1){
+            WritePoint(s,result,need_adjust);
+            //调整点的位置
+            adjustpoint(s,result,need_adjust,false,binpaper=binpaper);
+        }
+        else{
+            pre_deal(s,choice);
+            WritePoint(s,result,need_adjust,true);
+            //调整点的位置
+            adjustpoint(s,result,need_adjust,true,binpaper);
+        }
     }
 };
