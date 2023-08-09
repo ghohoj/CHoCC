@@ -268,7 +268,7 @@ while(j<n2)
 2. 运行CNTInterface，你可以得到文件`./result/CHoCCInterface.obj`，展示论文fig.15(c)。
 3. 运行ACHoCCInterface,你可以得到`./result/ACHoCCInterface.obj`，展示论文fig.19。在这个方法中你可以调节参数b（b的作用见论文fillet-surface，主要用于调节连接曲面的平滑程度）与是否加入补充点（an additional circle of infinitesimal radius）。
 4. 你可以修改配置文件地址参数`dir_address`或自己编写`textshape.txt`，展示不同的方向的接口。编写规则详见`./data/Readme.md`。本仓库已经提供了3接口，4接口，6接口，8接口等的范例。
-5. 运行CHoCCMesh，你可以得到`./result//CHoCCMesh.obj`，展示论文fig.2。
+5. 运行CHoCCMesh，你可以得到`./result/CHoCCMesh.obj`，展示论文fig.2。
 6. 运行CNTMesh，你可以得到`./result/CNTMesh.obj`，展示论文fig.13。
 
 运行结果如下所示：
